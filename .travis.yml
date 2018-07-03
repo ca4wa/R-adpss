@@ -3,4 +3,5 @@
 language: R
 sudo: false
 cache: packages
-  Rscript -e 'devtools::check()'
+  R
+  devtools::check()
