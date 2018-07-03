@@ -1,0 +1,17 @@
+Package: adpss
+Title: Design and Analysis of Locally or Globally Efficient Adaptive Designs
+Version: 0.1.0
+Authors@R: person("Kosuke", "Kashiwabara", email = "kashiwabara-tky@umin.ac.jp", role = c("aut", "cre"))
+Description: This package provides the functions for conducting a trial with adaptive
+  sample size determination. Such a trial consists of adaptive determination of sample size
+  at an interim analysis and implementation of frequentist statistical test of
+  a prefixed significance level. The required assumptions for the test statistics are
+  independent and stationary increments and normality. Predetermination of adaptation rule
+  is not required.
+Depends: R (>= 3.5.0)
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+LinkingTo: Rcpp
+Imports: Rcpp
+RoxygenNote: 6.0.1
