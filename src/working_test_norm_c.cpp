@@ -5,7 +5,7 @@
 //' @useDynLib adpss, .registration = TRUE
 //' @importFrom Rcpp sourceCpp
 
-//static int glb_sgn = 0;
+////static int glb_sgn = 0;
 
 static double bisection_inverse(double (*fx)(double, void *), double y, void *info,
   double sol_l = 0, double sol_u = 10, 
