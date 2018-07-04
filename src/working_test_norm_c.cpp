@@ -1621,7 +1621,7 @@ const double tol_cost = 1e-8) {
   //wing_l[0] = 3;
   vwing_l.at(0) = 3; //..
 
-  std::vector<double> vss0[work_KK_1];
+  std::vector<double> vss0[105];  // num of basic_schedule <= 100
   vss0[0].reserve(3);
   vss0[0].resize(3);
   for ( int kk = 1; kk < work_KK_1; kk++ ) {
@@ -1667,7 +1667,7 @@ const double tol_cost = 1e-8) {
 
   std::vector<int> vgg_odd_l(work_KK_1);
   int* gg_odd_l = vgg_odd_l.data();
-  std::vector<double> vgg_odd[work_KK_1];
+  std::vector<double> vgg_odd[105];  // num of basic_schedule <= 100
   for ( int kk = 0; kk < work_KK_1; kk++ ) {
     //gg_odd_l[kk] = wing_l[kk] + (kk > 0) * cc_k_add;
     vgg_odd_l.at(kk) = vwing_l.at(kk) + (kk > 0) * cc_k_add; //..
@@ -1677,7 +1677,7 @@ const double tol_cost = 1e-8) {
   }
   std::vector<int> vgg_l(work_KK_1);
   int* gg_l = vgg_l.data();
-  std::vector<double> vgg[work_KK_1];
+  std::vector<double> vgg[105];  // num of basic_schedule <= 100
   for ( int kk = 0; kk < work_KK_1; kk++ ) {
     //gg_l[kk] = gg_odd_l[kk] * 2 - 1;
     vgg_l.at(kk) = vgg_odd_l.at(kk) * 2 - 1; //..
@@ -1685,14 +1685,14 @@ const double tol_cost = 1e-8) {
     vgg[kk].resize(gg_l[kk]);
       //Rcpp::Rcout << "gg_l[" << kk << "]: " << gg_l[kk] << std::endl;
   }
-  std::vector<double> veta[work_KK_1];
+  std::vector<double> veta[105];  // num of basic_schedule <= 100
   for ( int kk = 0; kk < work_KK_1; kk++ ) {
     //veta[kk].reserve(gg_l[kk]);
     veta[kk].reserve(vgg_l.at(kk)); //..
     //veta[kk].resize(gg_l[kk]);
     veta[kk].resize(vgg_l.at(kk)); //..
   }
-  std::vector<double> vpr_rej_H0[work_KK_1];
+  std::vector<double> vpr_rej_H0[105];  // num of basic_schedule <= 100
   for ( int kk = 0; kk < work_KK_1; kk++ ) {
     vpr_rej_H0[kk].reserve(gg_l[kk]);
     vpr_rej_H0[kk].resize(gg_l[kk]);
@@ -1702,7 +1702,7 @@ const double tol_cost = 1e-8) {
   //  vpr_acc_H0[kk].reserve(gg_l[kk]);
   //  vpr_acc_H0[kk].resize(gg_l[kk]);
   //}
-  std::vector<double> vexp_time[work_KK_1];
+  std::vector<double> vexp_time[105];  // num of basic_schedule <= 100
   for ( int kk = 0; kk < work_KK_1; kk++ ) {
     vexp_time[kk].reserve(gg_l[kk]);
     vexp_time[kk].resize(gg_l[kk]);
@@ -2362,7 +2362,7 @@ double sample_size_norm_c(
   //-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-//
   // Memories for results                                                      //
   //-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-//
-  std::vector<double> vss0[work_KK_1];
+  std::vector<double> vss0[105];  // num of basic_schedule <= 100
   for ( int kk = 0; kk < work_KK_1; kk++ ) {
     //vss0[kk].reserve(wing_l[kk]);
     vss0[kk].reserve(vwing_l.at(kk)); //..
@@ -2384,7 +2384,7 @@ double sample_size_norm_c(
 
   std::vector<int> vgg_odd_l(work_KK_1);
   int* gg_odd_l = vgg_odd_l.data();
-  std::vector<double> vgg_odd[work_KK_1];
+  std::vector<double> vgg_odd[105];  // num of basic_schedule <= 100
   for ( int kk = 0; kk < work_KK_1; kk++ ) {
     //gg_odd_l[kk] = wing_l[kk];
     vgg_odd_l.at(kk) = vwing_l.at(kk); //..
@@ -2394,7 +2394,7 @@ double sample_size_norm_c(
   }
   std::vector<int> vgg_l(work_KK_1);
   int* gg_l = vgg_l.data();
-  std::vector<double> vgg[work_KK_1];
+  std::vector<double> vgg[105];  // num of basic_schedule <= 100
   for ( int kk = 0; kk < work_KK_1; kk++ ) {
     //gg_l[kk] = gg_odd_l[kk] * 2 - 1;
     vgg_l.at(kk) = vgg_odd_l.at(kk) * 2 - 1; //..
@@ -2403,7 +2403,7 @@ double sample_size_norm_c(
       //Rcpp::Rcout << "gg_l[" << kk << "]: " << gg_l[kk] << std::endl;
   }
 
-  std::vector<double> vpr_rej_H0[work_KK_1];
+  std::vector<double> vpr_rej_H0[105];  // num of basic_schedule <= 100
   for ( int kk = 0; kk < work_KK_1; kk++ ) {
     vpr_rej_H0[kk].reserve(gg_l[kk]);
     vpr_rej_H0[kk].resize(gg_l[kk]);
@@ -2611,7 +2611,7 @@ const int simpson_div = 6) {
   //-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-//
   // Memories for results                                                      //
   //-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-//
-  std::vector<double> vss0[work_KK_1];
+  std::vector<double> vss0[105];  // num of basic_schedule <= 100
   for ( int kk = 0; kk < work_KK_1; kk++ ) {
     vss0[kk].reserve(vwing_l[kk]);
     vss0[kk].resize(vwing_l[kk]);
@@ -2629,7 +2629,7 @@ const int simpson_div = 6) {
 
   std::vector<int> vgg_odd_l(work_KK_1);
   int* gg_odd_l = vgg_odd_l.data();
-  std::vector<double> vgg_odd[work_KK_1];
+  std::vector<double> vgg_odd[105];  // num of basic_schedule <= 100
   for ( int kk = 0; kk < work_KK_1; kk++ ) {
     gg_odd_l[kk] = wing_l[kk];
     vgg_odd[kk].reserve(gg_odd_l[kk]);
@@ -2638,7 +2638,7 @@ const int simpson_div = 6) {
   }
   std::vector<int> vgg_l(work_KK_1);
   int* gg_l = vgg_l.data();
-  std::vector<double> vgg[work_KK_1];
+  std::vector<double> vgg[105];  // num of basic_schedule <= 100
   for ( int kk = 0; kk < work_KK_1; kk++ ) {
     gg_l[kk] = gg_odd_l[kk] * 2 - 1;
     vgg[kk].reserve(gg_l[kk]);
@@ -2646,7 +2646,7 @@ const int simpson_div = 6) {
       //Rcpp::Rcout << "gg_l[" << kk << "]: " << gg_l[kk] << std::endl;
   }
 
-  std::vector<double> vpr_rej_H0[work_KK_1];
+  std::vector<double> vpr_rej_H0[105];  // num of basic_schedule <= 100
   for ( int kk = 0; kk < work_KK_1; kk++ ) {
     vpr_rej_H0[kk].reserve(gg_l[kk]);
     vpr_rej_H0[kk].resize(gg_l[kk]);
