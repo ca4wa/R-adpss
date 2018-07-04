@@ -116,7 +116,7 @@ adaptive_analysis_norm_local <- function(
   ### Interim Analyses ###
   kk <- 1  # Current stage
   while( 1 ){
-    print( paste("%%%%%%%% Analysis for Stage :", kk, "%%%%%%%%") )
+    #print( paste("%%%%%%%% Analysis for Stage :", kk, "%%%%%%%%") )
     t.k <- S.k[kk + 1]
 
     ### Working design update ###
@@ -149,13 +149,13 @@ adaptive_analysis_norm_local <- function(
 
     ### Decision ###
     if( alp.k >= 1 ){
-      print( "INTERIM STOP" )
+      #print( "INTERIM STOP" )
       break;
     } else if( kk >= (ana.num - 1 - fin) ) {
-      print( "CONTINUE" )
+      #print( "CONTINUE" )
       break;
     } else {
-      print( "CONTINUE" )
+      #print( "CONTINUE" )
     }
 
     ### Next stage ###
@@ -166,7 +166,7 @@ adaptive_analysis_norm_local <- function(
   if( alp.k < 1 && fin )
   {
     kk <- kk + 1
-    print( paste("%%%%%%%% Analysis for Stage :", kk, "(FINAL) %%%%%%%%") )
+    #print( paste("%%%%%%%% Analysis for Stage :", kk, "(FINAL) %%%%%%%%") )
     t.k <- S.k[kk + 1]
 
     ### Dummy ###
