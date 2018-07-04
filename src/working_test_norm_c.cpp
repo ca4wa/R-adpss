@@ -1288,6 +1288,10 @@ const double tol_cost = 1e-8) {
       Rcpp::stop("'basic_schedule' is allowed to have only one '0' or no '0' among its elements.");
     }
     *intVar = (*intVar == 1);
+    if ( (  ((basic_schedule.size() - *intVar) < 2) && (basic_schedule.at(0) == 0) && (basic_schedule_num > 100)) ||
+         (!(((basic_schedule.size() - *intVar) < 2) && (basic_schedule.at(0) == 0)) && ((basic_schedule.size() - *intVar) > 100)) ) {
+      Rcpp::stop("The length of 'basic_schedule' should be less than 100.");
+    }
     if ( ((basic_schedule.size() - *intVar) < 2) && (basic_schedule.at(0) == 0) && (work_beta < 0) && (work_beta > 1) ) {
       Rcpp::stop("When 'basic_schedule' is unspecified, 'work_beta' should be a value between 0 and 1.");
     }

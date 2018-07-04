@@ -2,12 +2,12 @@ Package: adpss
 Title: Design and Analysis of Locally or Globally Efficient Adaptive Designs
 Version: 0.1.0
 Authors@R: person("Kosuke", "Kashiwabara", email = "kashiwabara-tky@umin.ac.jp", role = c("aut", "cre"))
-Description: This package provides the functions for planning and conducting a
+Description: Provides the functions for planning and conducting a
   clinical trial with adaptive sample size determination with maximal statistical
   efficiency. Such a trial consists of adaptive determination of sample size
   at an interim analysis and implementation of frequentist statistical test at the
   interim and final analysis with a prefixed significance level. The required
-  assumptions for the stagewise test statistics are independent and stationary
+  assumptions for the stage-wise test statistics are independent and stationary
   increments and normality. Predetermination of adaptation rule is not required.
 Depends: R (>= 3.5.0)
 License: GPL (>= 2)
