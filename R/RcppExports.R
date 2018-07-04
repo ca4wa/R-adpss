@@ -13,7 +13,7 @@ sample_size_norm_c <- function(initial_test = 0L, sample_size = TRUE, effect_siz
     .Call(`_adpss_sample_size_norm_c`, initial_test, sample_size, effect_size, time, target_power, final_time, tol_sample_size, input_check)
 }
 
-exact_est_norm_c <- function(initial_test = 0L, times = 0L, stats = 0L, costs = 0L, final_analysis = TRUE, ci_coef = 0.95, tol_est = 1e-8, input_check = TRUE) {
-    .Call(`_adpss_exact_est_norm_c`, initial_test, times, stats, costs, final_analysis, ci_coef, tol_est, input_check)
+exact_est_norm_c <- function(initial_test = 0L, times = 0L, stats = 0L, costs = 0L, final_analysis = TRUE, estimate = TRUE, ci_coef = 0.95, tol_est = 1e-8, input_check = TRUE) {
+    .Call(`_adpss_exact_est_norm_c`, initial_test, times, stats, costs, final_analysis, estimate, ci_coef, tol_est, input_check)
 }
 

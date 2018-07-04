@@ -55,8 +55,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // exact_est_norm_c
-Rcpp::List exact_est_norm_c(Rcpp::List initial_test, Rcpp::NumericVector times, Rcpp::NumericVector stats, Rcpp::NumericVector costs, const bool final_analysis, const double ci_coef, const double tol_est, const bool input_check);
-RcppExport SEXP _adpss_exact_est_norm_c(SEXP initial_testSEXP, SEXP timesSEXP, SEXP statsSEXP, SEXP costsSEXP, SEXP final_analysisSEXP, SEXP ci_coefSEXP, SEXP tol_estSEXP, SEXP input_checkSEXP) {
+Rcpp::List exact_est_norm_c(Rcpp::List initial_test, Rcpp::NumericVector times, Rcpp::NumericVector stats, Rcpp::NumericVector costs, const bool final_analysis, const bool estimate, const double ci_coef, const double tol_est, const bool input_check);
+RcppExport SEXP _adpss_exact_est_norm_c(SEXP initial_testSEXP, SEXP timesSEXP, SEXP statsSEXP, SEXP costsSEXP, SEXP final_analysisSEXP, SEXP estimateSEXP, SEXP ci_coefSEXP, SEXP tol_estSEXP, SEXP input_checkSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -65,10 +65,11 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::NumericVector >::type stats(statsSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericVector >::type costs(costsSEXP);
     Rcpp::traits::input_parameter< const bool >::type final_analysis(final_analysisSEXP);
+    Rcpp::traits::input_parameter< const bool >::type estimate(estimateSEXP);
     Rcpp::traits::input_parameter< const double >::type ci_coef(ci_coefSEXP);
     Rcpp::traits::input_parameter< const double >::type tol_est(tol_estSEXP);
     Rcpp::traits::input_parameter< const bool >::type input_check(input_checkSEXP);
-    rcpp_result_gen = Rcpp::wrap(exact_est_norm_c(initial_test, times, stats, costs, final_analysis, ci_coef, tol_est, input_check));
+    rcpp_result_gen = Rcpp::wrap(exact_est_norm_c(initial_test, times, stats, costs, final_analysis, estimate, ci_coef, tol_est, input_check));
     return rcpp_result_gen;
 END_RCPP
 }

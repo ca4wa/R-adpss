@@ -175,6 +175,7 @@ sample_size_norm_global <- function(
 #' @param stats The sequence of test statistics.
 #' @param costs The sequence of loss required to construct working tests. Specification is optional. Partial specification is allowed, in which non-specification may be represented by \code{0}.
 #' @param final_analysis If \code{TRUE}, the result input will be regarded as complete (no more data will be obtained) and the significance level will be exhausted. If \code{FALSE}, the current analysis will be regarded as an interim analysis and the significance level will be preserved.
+#' @param estimate If \code{TRUE}, p-value, median unbiased estimator and upper and lower confidence limits will be calculated.
 #' @param ci_coef The confidence coefficient. Default is 0.95.
 #' @param tol_est The precision of the calculated results.
 #' @param input_check Indicate whether or not the arguments input by user contain invalid values.
@@ -182,8 +183,12 @@ sample_size_norm_global <- function(
 #' @references
 #' Kashiwabara, K., Matsuyama, Y. An efficient adaptive design approximating fixed sample size designs. In preparation.
 #' @examples
+#' # Loss by erroneous rejection of the null hypothesis
+#' # (These values can be calculated if its input is omitted in the functions below)
+#' cost0 <- c(1683.458, 1555.020, 1545.278, 1528.397, 1471.727)
+#' 
 #' # Construct an initial working test
-#' init_work_test <- work_test_norm_global(min_effect_size = -log(0.65))
+#' init_work_test <- work_test_norm_global(min_effect_size = -log(0.65), cost_type_1_err=cost0[1])
 #' with(init_work_test, plot(par$U_0, char$boundary, xlim=range(0, par$U_0),
 #'   ylim=range(0, char$boundary[-1]), pch=16, cex=0.5) )
 #' 
@@ -192,12 +197,13 @@ sample_size_norm_global <- function(
 #'   initial_test = init_work_test,
 #'   times = c(5.67, 9.18, 14.71, 20.02),
 #'   stats = c(3.40, 4.35, 7.75, 11.11),
-#'   final_analysis = FALSE
+#'   costs = cost0[-1],
+#'   final_analysis = FALSE,
+#'   estimate = FALSE
 #'   )
 #' print( with(interim_analysis_4, data.frame(analysis=0:par$analyses, time=par$times,
 #'   cost=char$cost0, stat=par$stats, boundary=char$boundary, pr_cond_err=char$cond_type_I_err,
 #'   reject_H0=char$rej_H0)) )
-#' print( interim_analysis_4$est )
 #' 
 #' # Sample size calculation
 #' sample_size_norm_global(
@@ -213,13 +219,13 @@ sample_size_norm_global <- function(
 #'   initial_test = init_work_test,
 #'   times = c(5.67, 9.18, 14.71, 20.02, 24.86),
 #'   stats = c(3.40, 4.35, 7.75, 11.11, 14.84),
-#'   costs = interim_analysis_4$char$cost0[-1], # Omited element is for time = 0
-#'   final_analysis = TRUE
+#'   costs = cost0[-1],
+#'   final_analysis = TRUE,
+#'   estimate = FALSE
 #'   )
 #' print( with(final_analysis, data.frame(analysis=0:par$analyses, time=par$times,
 #'   cost=char$cost0, stat=par$stats, boundary=char$boundary, pr_cond_err=char$cond_type_I_err,
 #'   reject_H0=char$rej_H0)) )
-#' print( final_analysis$est )
 #' @seealso
 #' \code{\link{work_test_norm_global}} and \code{\link{sample_size_norm_global}}.
 #' @export
@@ -229,6 +235,7 @@ adaptive_analysis_norm_global <- function(
   stats = 0,
   costs = 0,
   final_analysis = TRUE,
+  estimate = TRUE,
   ci_coef = 0.95,
   tol_est = 1e-8,
   input_check = TRUE
@@ -237,6 +244,7 @@ adaptive_analysis_norm_global <- function(
   if ( length(input_check) > 1 ) stop("'input_check' should be scalar.")
   if ( input_check ) {
     if ( length(final_analysis) != 1 ) stop("'final_analysis' should be scalar.")
+    if ( length(estimate) != 1 ) stop("'estimate' should be scalar.")
     if ( length(ci_coef) != 1 ) stop("'ci_coef' should be scalar.")
     if ( length(tol_est) != 1 ) stop("'tol_est' should be scalar.")
   }
@@ -247,6 +255,7 @@ adaptive_analysis_norm_global <- function(
     stats,
     costs,
     final_analysis,
+    estimate,
     ci_coef,
     tol_est,
     input_check
