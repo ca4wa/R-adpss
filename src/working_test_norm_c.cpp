@@ -799,8 +799,8 @@ static double construct(double cost0, struct ground* ground) {
   struct base* str_base = &(ground->str_base);
   struct result* str_result = &(ground->str_result);
 
-  Rcpp::Rcout << "# work_test_norm_c # # construct # START" << std::endl;
-  Rcpp::Rcout << "# work_test_norm_c # # construct # cost for (rej H0 | H0): " << cost0 << std::endl;
+  ////Rcpp::Rcout << "# work_test_norm_c # # construct # START" << std::endl;
+  ////Rcpp::Rcout << "# work_test_norm_c # # construct # cost for (rej H0 | H0): " << cost0 << std::endl;
 
   //-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-//
   // Recovery: Settings                                                        //
@@ -1230,7 +1230,7 @@ static double construct(double cost0, struct ground* ground) {
   *pr_rej_H0_k = (*gg_k >= *cc_k) + (*gg_k < *cc_k) * *pr_rej_H0_k;
   //*pr_rej_H0_k += (stat >= *doubleVar)
   //Rcpp::Rcout << "# work_test_norm_c # # construct # Type I Err Pr: " << *pr_rej_H0_k << std::endl;
-  Rcpp::Rcout << "# work_test_norm_c # # construct # END" << std::endl;
+  ////Rcpp::Rcout << "# work_test_norm_c # # construct # END" << std::endl;
 
   return *pr_rej_H0_k;
 
@@ -1777,13 +1777,13 @@ const double tol_cost = 1e-8) {
   cost_upper_lim = (prev_cost != 0) * prev_cost + (prev_cost == 0) * (*doubleVar);
 
   if ( cost0 == 0) {
-    Rcpp::Rcout << "# work_test_norm_c # cost search start." << std::endl;
+    ////Rcpp::Rcout << "# work_test_norm_c # cost search start." << std::endl;
     cost0 = bisection_inverse((double (*)(double, void*)) construct,
             cond_alpha, &str_ground, 1e-6, cost_upper_lim,
             false, true, false, tol_cost);
   }
   double pr_type_1_err = construct(cost0, &str_ground);
-  Rcpp::Rcout << "# work_test_norm_c # cost for (rej H0 | H0): " << cost0 << std::endl;
+  ////Rcpp::Rcout << "# work_test_norm_c # cost for (rej H0 | H0): " << cost0 << std::endl;
 
   //-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-//
   // Operating Characteristic                                                  //
@@ -2508,11 +2508,11 @@ double sample_size_norm_c(
         target_power, &str_ground, time, time * 10,
         true, false, false, tol_sample_size);
     }
-    Rcpp::Rcout << "# sample_size_norm_c # Sample Size = " << *doubleVar << std::endl;
+    ////Rcpp::Rcout << "# sample_size_norm_c # Sample Size = " << *doubleVar << std::endl;
   } else {
     *doubleVar = pr_rej_H0_lower_bound(final_analysis, &str_ground);
     //Rcpp::Rcout << "# sample_size_norm_c # pr_rej_H0 = " << *doubleVar << std::endl;
-    Rcpp::Rcout << "# sample_size_norm_c # Pr(rej H0 | " << effect_size << "): " << *doubleVar << std::endl;
+    ////Rcpp::Rcout << "# sample_size_norm_c # Pr(rej H0 | " << effect_size << "): " << *doubleVar << std::endl;
   }
 
   return doubleVar[0];
@@ -2729,7 +2729,7 @@ const double effect_size,
 struct base_test* ptest
 ) {
 
-  Rcpp::Rcout << "# project_power # START" << std::endl;
+  ////Rcpp::Rcout << "# project_power # START" << std::endl;
   Rcpp::List initial_test = *(ptest->test);
   std::vector<double> vtimes = *(ptest->times);
   std::vector<double> vstats = *(ptest->stats);
@@ -2972,8 +2972,8 @@ struct base_test* ptest
       //Rcpp::Rcout << "# project_power # Stage " << kk << "; cond power (effect_size = " << effect_size << ") = " << cond_power << std::endl;
   }
     //Rcpp::Rcout << "# project_power # effect_size = " << effect_size << "; conditional power = " << cond_power << "; fin_kk = " << fin_kk << "; fin_time = " << vU_k.at(1) << "; fin_cc = " << fin_cc << std::endl;
-    Rcpp::Rcout << "# project_power # effect_size = " << effect_size << "; conditional power = " << cond_power << std::endl;
-    Rcpp::Rcout << "# project_power # END" << std::endl;
+    ////Rcpp::Rcout << "# project_power # effect_size = " << effect_size << "; conditional power = " << cond_power << std::endl;
+    ////Rcpp::Rcout << "# project_power # END" << std::endl;
   return cond_power;
 }
 
@@ -3225,17 +3225,17 @@ Rcpp::List exact_est_norm_c(
     str_test.cc = &rcc;
 
     *doubleVar = (1. - ci_coef) / 2.;
-        Rcpp::Rcout << "# exact_est_norm_c # ci_coef = " << ci_coef << std::endl;
+      //Rcpp::Rcout << "# exact_est_norm_c # ci_coef = " << ci_coef << std::endl;
 
     //double* est = vest.data();
     mue = stat / time; // temporarily MLE
     doubleVar[2] = sqrt(1. / time); // naive SE for MLE
     doubleVar[3] = -R::qnorm(*doubleVar, 0, 1, 1, 0);
     doubleVar[5] = doubleVar[3] * doubleVar[2]; // CI wing
-        Rcpp::Rcout << "# exact_est_norm_c # doubleVar[0] = " << doubleVar[0] << std::endl;
-        Rcpp::Rcout << "# exact_est_norm_c # doubleVar[2] = " << doubleVar[2] << std::endl;
-        Rcpp::Rcout << "# exact_est_norm_c # doubleVar[3] = " << doubleVar[3] << std::endl;
-        Rcpp::Rcout << "# exact_est_norm_c # doubleVar[5] = " << doubleVar[5] << std::endl;
+      //Rcpp::Rcout << "# exact_est_norm_c # doubleVar[0] = " << doubleVar[0] << std::endl;
+      //Rcpp::Rcout << "# exact_est_norm_c # doubleVar[2] = " << doubleVar[2] << std::endl;
+      //Rcpp::Rcout << "# exact_est_norm_c # doubleVar[3] = " << doubleVar[3] << std::endl;
+      //Rcpp::Rcout << "# exact_est_norm_c # doubleVar[5] = " << doubleVar[5] << std::endl;
 
     if ( max_kk == 2 ) {
       pval = R::pnorm(-stat / sqrt(time), 0, 1, 1, 0);
@@ -3245,9 +3245,9 @@ Rcpp::List exact_est_norm_c(
     } else {
       doubleVar[1] = project_power(mue, &str_test); // p-value at the MLE
       doubleVar[4] = mue + -R::qnorm(doubleVar[1], 0, 1, 1, 0) * doubleVar[2];
-        Rcpp::Rcout << "# exact_est_norm_c # Temp. Lower Conf Lim = " << doubleVar[4] - doubleVar[5] << std::endl;
-        Rcpp::Rcout << "# exact_est_norm_c # Temp. Med Unbias Est = " << doubleVar[4] << std::endl;
-        Rcpp::Rcout << "# exact_est_norm_c # Temp. Upper Conf Lim = " << doubleVar[4] + doubleVar[5] << std::endl;
+        //Rcpp::Rcout << "# exact_est_norm_c # Temp. Lower Conf Lim = " << doubleVar[4] - doubleVar[5] << std::endl;
+        //Rcpp::Rcout << "# exact_est_norm_c # Temp. Med Unbias Est = " << doubleVar[4] << std::endl;
+        //Rcpp::Rcout << "# exact_est_norm_c # Temp. Upper Conf Lim = " << doubleVar[4] + doubleVar[5] << std::endl;
 
   // Lower
   //Rcpp::Rcout << "effect_size = " << doubleVar[4] - doubleVar[5] * 3/2 << std::endl;
@@ -3258,6 +3258,7 @@ Rcpp::List exact_est_norm_c(
   //Rcpp::Rcout << "effect_size = " << doubleVar[4] + doubleVar[5] * 3 / 2. << std::endl;
   //Rcpp::Rcout << "pval = " << project_power(doubleVar[4] + doubleVar[5] * 3 / 2., &str_test) << std::endl;
   //Rcpp::stop("complete");
+     Rcpp::Rcout << "# exact_est_norm_c # Computing P-value" << std::endl;
       pval = project_power(0, &str_test); // p-value at the null
       // Median Unbiased Est
      Rcpp::Rcout << "# exact_est_norm_c # Computing median unbiased estimator" << std::endl;
