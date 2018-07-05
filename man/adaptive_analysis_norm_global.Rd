@@ -28,7 +28,7 @@ adaptive_analysis_norm_global(initial_test = 0, times = 0, stats = 0,
 \item{input_check}{Indicate whether or not the arguments input by user contain invalid values.}
 }
 \value{
-It returns whther or not the result was statistically significant, a p-value and an exact confidence limits.
+It returns whether or not the result was statistically significant, a p-value and an exact confidence limits.
 }
 \description{
 \code{adaptive_analysis_norm_global} performs an globally efficient adaptive test, 

@@ -29,7 +29,7 @@ work_test_norm_global(overall_sig_level = 0.025, work_beta = 0.05,
 
 \item{effect_size}{The effect size for which the probability of rejecting the null hypothesis will be calculated. If \code{cost_type_1_err = 0}, \code{effect_size} will be forced to be the null value, 0.  Default is 0.}
 
-\item{basic_schedule_num}{The number of analyisis of the working test. Default is 50.}
+\item{basic_schedule_num}{The number of analysis of the working test. Default is 50.}
 
 \item{basic_schedule_power}{Determine the intervals between analyses. Default is 2.}
 
@@ -43,7 +43,7 @@ work_test_norm_global(overall_sig_level = 0.025, work_beta = 0.05,
 
 \item{next_time}{The time of the next analysis. Either \code{prev_time} or \code{next_time} should be 0. See the example below.}
 
-\item{stat}{The valud of the test statistic which has independent and stationary increments. The value of \code{stat} should be 0 at \code{time = 0}.}
+\item{stat}{The value of the current test statistic. The value of \code{stat} should be 0 at \code{time = 0}.}
 
 \item{input_check}{Indicate whether or not the arguments input by user contain invalid values.}
 
@@ -56,7 +56,7 @@ work_test_norm_global(overall_sig_level = 0.025, work_beta = 0.05,
 \item{tol_cost}{The precision in calculation of the loss, \code{cost_type_1_error}.}
 }
 \value{
-List of values of the parameters specified, information of the working test, and the conditional probablity of rejecting the null hypothesis.
+List of values of the parameters specified, information of the working test, and the conditional probability of rejecting the null hypothesis.
 }
 \description{
 This function is used as a routine by \code{\link{adaptive_analysis_norm_global}} and \code{\link{sample_size_norm_global}}.

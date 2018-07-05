@@ -10,20 +10,20 @@
 #' @param prev_cost The value of \code{cost_type_1_err} of the working test in the analysis just before the current analysis.
 #' @param min_effect_size The minimum effect size.  It should be positive. The working test will be constructed to have the power of \code{1 - work_beta} for this effect size.  Default is 1.
 #' @param effect_size The effect size for which the probability of rejecting the null hypothesis will be calculated. If \code{cost_type_1_err = 0}, \code{effect_size} will be forced to be the null value, 0.  Default is 0.
-#' @param basic_schedule_num The number of analyisis of the working test. Default is 50.
+#' @param basic_schedule_num The number of analysis of the working test. Default is 50.
 #' @param basic_schedule_power Determine the intervals between analyses. Default is 2.
 #' @param basic_schedule The basic analysis schedule arbitrarily specified by user.
 #' @param prior_dist Prior distribution for effect sizes of \code{min_effect_size * 0:10 / 2}.
 #' @param prev_time The time of the analysis just before the current analysis. Either \code{prev_time} or \code{next_time} should be 0. See the example below.
 #' @param time The time of the current analysis.
 #' @param next_time The time of the next analysis. Either \code{prev_time} or \code{next_time} should be 0. See the example below.
-#' @param stat The valud of the test statistic which has independent and stationary increments. The value of \code{stat} should be 0 at \code{time = 0}.
+#' @param stat The value of the current test statistic. The value of \code{stat} should be 0 at \code{time = 0}.
 #' @param input_check Indicate whether or not the arguments input by user contain invalid values.
 #' @param out_process The values used in calculation will be output in addition to the main output. Default is FALSE.
 #' @param simpson_div The precision determining the precision of numerical integration. The default value is 6.
 #' @param tol_boundary The precision in calculation of the stopping boundary of the working test.
 #' @param tol_cost The precision in calculation of the loss, \code{cost_type_1_error}.
-#' @return List of values of the parameters specified, information of the working test, and the conditional probablity of rejecting the null hypothesis.
+#' @return List of values of the parameters specified, information of the working test, and the conditional probability of rejecting the null hypothesis.
 #' @seealso
 #' \code{\link{adaptive_analysis_norm_global}} for example of this function.
 #' @importFrom stats dnorm pnorm qnorm
@@ -179,7 +179,7 @@ sample_size_norm_global <- function(
 #' @param ci_coef The confidence coefficient. Default is 0.95.
 #' @param tol_est The precision of the calculated results.
 #' @param input_check Indicate whether or not the arguments input by user contain invalid values.
-#' @return It returns whther or not the result was statistically significant, a p-value and an exact confidence limits.
+#' @return It returns whether or not the result was statistically significant, a p-value and an exact confidence limits.
 #' @references
 #' Kashiwabara, K., Matsuyama, Y. An efficient adaptive design approximating fixed sample size designs. In preparation.
 #' @examples
