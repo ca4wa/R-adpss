@@ -40,32 +40,14 @@ Null hypothesis is fixed at 0 without loss of generality.
 No procedure to calculate p-value or confidence intervals is employed.
 }
 \examples{
-# Loss by erroneous rejection of the null hypothesis
-# (These values can be calculated if its input is omitted in the functions below)
-cost0 <- c(1683.458, 1555.020, 1545.278, 1528.397, 1471.727)
-
 # Construct an initial working test
-init_work_test <- work_test_norm_global(min_effect_size = -log(0.65), cost_type_1_err=cost0[1])
-with(init_work_test, plot(par$U_0, char$boundary, xlim=range(0, par$U_0),
-  ylim=range(0, char$boundary[-1]), pch=16, cex=0.5) )
-
-# Final interim analysis
-interim_analysis_4 <- adaptive_analysis_norm_global(
-  initial_test = init_work_test,
-  times = c(5.67, 9.18, 14.71, 20.02),
-  stats = c(3.40, 4.35, 7.75, 11.11),
-  costs = cost0[-1],
-  final_analysis = FALSE,
-  estimate = FALSE
-  )
-print( with(interim_analysis_4, data.frame(analysis=0:par$analyses, time=par$times,
-  cost=char$cost0, stat=par$stats, boundary=char$boundary, pr_cond_err=char$cond_type_I_err,
-  reject_H0=char$rej_H0)) )
+# Note: cost_type_1_err will be automatically calculated when 0 is specified.
+init_work_test <- work_test_norm_global(min_effect_size = -log(0.65), cost_type_1_err=1683.458)
 
 # Sample size calculation
 sample_size_norm_global(
   initial_test = init_work_test,
-  effect_size = 11.1110 / 20.02, # needs not be MLE
+  effect_size = 11.11 / 20.02, # needs not be MLE
   time = 20.02,
   target_power = 0.75,
   sample_size = TRUE
@@ -74,9 +56,9 @@ sample_size_norm_global(
 # Final analysis
 final_analysis <- adaptive_analysis_norm_global(
   initial_test = init_work_test,
-  times = c(5.67, 9.18, 14.71, 20.02, 24.86),
-  stats = c(3.40, 4.35, 7.75, 11.11, 14.84),
-  costs = cost0[-1],
+  times = c(9.18, 20.02, 24.86),
+  stats = c(4.35, 11.11, 14.84),
+  costs = c(1545.278, 1471.727),
   final_analysis = TRUE,
   estimate = FALSE
   )

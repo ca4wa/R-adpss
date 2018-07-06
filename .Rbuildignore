@@ -5,6 +5,6 @@
 ^README\.Rmd$
 ^README-.*\.png$
 ^NEWS\.Rmd$
-^NEWS\.md$
+^NEWS-.*\.png$
 ^cran-comments\.Rmd$
 ^cran-comments\.md$
