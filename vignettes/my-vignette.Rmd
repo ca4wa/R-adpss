@@ -1,10 +1,10 @@
 ---
-title: "Design and Analysis of Clinical Trials with Fully Flexible Adaptive Sample Determination"
+title: "Design and Analysis of Clinical Trials with Fully Flexible Adaptive Sample Size Determination"
 author: "Kosuke Kashiwabara"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Design and Analysis of Clinical Trials with Fully Flexible Adaptive Sample Determination}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
