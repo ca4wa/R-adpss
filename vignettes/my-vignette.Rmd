@@ -15,6 +15,7 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 library(adpss)
+.cost0 <- c(1683.45766074111, 1555.0203968489900, 1545.2777876660502, 1528.3974722278008, 1471.7273013354791)
 ```
 In this vignettes, an application of a locally and a globally efficient 
 adaptive sample determination to a confirmatory randomized clinical trial
@@ -53,6 +54,11 @@ interim_analysis_4 <- adaptive_analysis_norm_local(
   stats = c(3.40, 4.35, 7.75, 11.11),
   final_analysis = FALSE
   )
+```
+
+The result is summarized as follows:
+
+```{r}
 # Summary
 print( with(interim_analysis_4, data.frame(analysis=0:par$analyses, time=par$times,
   intercept=char$intercept, stat=par$stats, boundary=char$boundary,
@@ -86,13 +92,18 @@ final_analysis <- adaptive_analysis_norm_local(
   stats = c(3.40, 4.35, 7.75, 11.11, 14.84),
   final_analysis = TRUE
   )
+```
+
+Again, the result is summarized as:
+
+```{r}
 # Summary
 print( with(final_analysis, data.frame(analysis=0:par$analyses, time=par$times,
   intercept=char$intercept, stat=par$stats, boundary=char$boundary,
   pr_cond_err=char$cond_type_I_err, reject_H0=char$rej_H0)) )
 ```
 
-The null hypothesis is rejected.
+As indicated at the final row, the null hypothesis is rejected.
 
 
 
@@ -102,26 +113,51 @@ Globally efficient adaptive design can be performed in a similar way by using th
 
 The initial working test, a group sequential design with 50 analyses, is prepared as a basis of conditional error function. Its stopping boundary can be constructed by the function `work_test_norm_global`.
 
-```{r}
+```{r, eval=TRUE, echo=FALSE}
+init_work_test <- work_test_norm_global(min_effect_size = -log(0.65), cost_type_1_err = .cost0[1])
+```
+```{r, eval=FALSE, echo=TRUE}
 init_work_test <- work_test_norm_global(min_effect_size = -log(0.65), cost_type_1_err = 0)
-with(init_work_test, plot(par$U_0, char$boundary, xlim=range(0, par$U_0),
-  ylim=range(0, char$boundary[-1]), pch=16, cex=0.5) )
 ```
 
 Here, `cost_type_1_err = 0` means the value of loss caused by erroneous rejection of the null hypothesis is calculated to make the constructed working test have exactly the type I error probability of $\alpha$.
 The default value of `cost_type_1_err` is `0` and thus can be omitted.
+The boundary of the working test just constructed is displayed by the next code.
+
+```{r, echo=TRUE}
+with(init_work_test, plot(par$U_0, char$boundary, xlim=range(0, par$U_0),
+  ylim=range(0, char$boundary[-1]), pch=16, cex=0.5) )
+```
 
 The four interim analyses can be performed by the function `adaptive_analysis_norm_global`.
 Designating `FALSE` to the argument `final_analysis` indicates that the latest analysis is not the final, i.e., the overall significance level must not be exhausted at this time.
 
-```{r}
+```{r, eval=TRUE, echo=FALSE}
 # Final interim analysis
 interim_analysis_4 <- adaptive_analysis_norm_global(
   initial_test = init_work_test,
   times = c(5.67, 9.18, 14.71, 20.02),
   stats = c(3.40, 4.35, 7.75, 11.11),
-  final_analysis = FALSE
+  costs = .cost0[-1],
+  final_analysis = FALSE,
+  estimate = FALSE
   )
+```
+
+```{r, eval=FALSE, echo=TRUE}
+# Final interim analysis
+interim_analysis_4 <- adaptive_analysis_norm_global(
+  initial_test = init_work_test,
+  times = c(5.67, 9.18, 14.71, 20.02),
+  stats = c(3.40, 4.35, 7.75, 11.11),
+  final_analysis = FALSE,
+  estimate = FALSE
+  )
+```
+
+The result is:
+
+```{r}
 # Summary
 print( with(interim_analysis_4, data.frame(analysis=0:par$analyses, time=par$times,
   cost=char$cost0, stat=par$stats, boundary=char$boundary, pr_cond_err=char$cond_type_I_err,
@@ -129,13 +165,13 @@ print( with(interim_analysis_4, data.frame(analysis=0:par$analyses, time=par$tim
 ```
 
 At the forth (final) interim analysis, the null hypothesis is not rejected. Then, the maximum Fisher information level is calculated.
-The maximum likelihood estimate $11.11 / 20.02$ at the forth interim analysis is chosen as the alternative hypothesis. The maximum information level to obtaine the marginal power of $0.75$ can be calculated by the function `sample_size_norm_global`.
+The maximum likelihood estimate $11.11 / 20.02$ at the forth interim analysis is chosen as the alternative hypothesis, though this is not compelling. The maximum information level to obtaine the marginal power of $0.75$ can be calculated by the function `sample_size_norm_global`.
 
 ```{r}
 # Sample size calculation
 sample_size_norm_global(
   initial_test = init_work_test,
-  effect_size = 11.1110 / 20.02, # needs not be MLE
+  effect_size = 11.11 / 20.02, # needs not be MLE
   time = 20.02,
   target_power = 0.75,
   sample_size = TRUE
@@ -152,19 +188,25 @@ final_analysis <- adaptive_analysis_norm_global(
   times = c(5.67, 9.18, 14.71, 20.02, 25.88),
   stats = c(3.40, 4.35, 7.75, 11.11, 14.84),
   costs = interim_analysis_4$char$cost0[-1], # Omited element is for time = 0
-  final_analysis = TRUE
+  final_analysis = TRUE,
+  estimate = FALSE
   )
 # Summary
 print( with(final_analysis, data.frame(analysis=0:par$analyses, time=par$times,
   cost=char$cost0, stat=par$stats, boundary=char$boundary, pr_cond_err=char$cond_type_I_err,
   reject_H0=char$rej_H0)) )
+
+```
+
+As indicated by the final row, the null hypothesis is rejected.
+
+Note that, if `estimate = TRUE`, additionally exact P-value, median unbiased estimate, and confidence limits can be calculated.
+These results will be extracted by:
+
+```{r, eval=FALSE, echo=TRUE}
 # Estimte (P-value, median unbiased estimate, and confidence limits)
 print( final_analysis$est )
 ```
-
-The null hypothesis is rejected.
-
-
 
 
 
