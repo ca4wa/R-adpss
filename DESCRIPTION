@@ -14,6 +14,7 @@ Depends: R (>= 3.5.0)
 License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
+URL: https://github.com/ca4wa/R-adpss
 LinkingTo: Rcpp (>= 0.12.17)
 Imports: Rcpp (>= 0.12.17)
 RoxygenNote: 6.0.1
