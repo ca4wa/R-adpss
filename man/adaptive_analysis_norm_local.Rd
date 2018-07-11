@@ -31,6 +31,7 @@ Normality with known variance is assumed for the test statistic
 (more accurately, the test statistic is assumed to follow Brownian motion.)
 Null hypothesis is fixed at 0 without loss of generality.
 No procedure to calculate p-value or confidence intervals is employed.
+For detailed illustration, see \code{vignette("adpss_ex")}.
 }
 \examples{
 # Sample size calculation
@@ -42,18 +43,6 @@ sample_size_norm_local(
   target_power = 0.75,
   sample_size = TRUE
   )
-
-# Final analysis
-final_analysis <- adaptive_analysis_norm_local(
-  overall_sig_level = 0.025,
-  min_effect_size = -log(0.65),
-  times = c(9.18, 20.02, 24.86),
-  stats = c(4.35, 11.11, 14.84),
-  final_analysis = TRUE
-  )
-print( with(final_analysis, data.frame(analysis=0:par$analyses, time=par$times,
-  intercept=char$intercept, stat=par$stats, boundary=char$boundary,
-  pr_cond_err=char$cond_type_I_err, reject_H0=char$rej_H0)) )
 }
 \references{
 Kashiwabara, K., Matsuyama, Y. An efficient adaptive design approximating fixed sample size designs. In preparation.

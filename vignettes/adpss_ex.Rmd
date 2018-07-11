@@ -4,7 +4,7 @@ author: "Kosuke Kashiwabara"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Design and Analysis of Clinical Trials with Fully Flexible Adaptive Sample Determination}
+  %\VignetteIndexEntry{Illustration of adaptive sample size determination}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

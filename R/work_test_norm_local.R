@@ -7,6 +7,7 @@
 #' (more accurately, the test statistic is assumed to follow Brownian motion.)
 #' Null hypothesis is fixed at 0 without loss of generality.
 #' No procedure to calculate p-value or confidence intervals is employed.
+#' For detailed illustration, see \code{vignette("adpss_ex")}.
 #' 
 #' @param overall_sig_level Overall significance level in (0, 1). Default is 0.025.
 #' @param min_effect_size The minimum effect size.  It should be positive. The working test will be constructed to have the power of \code{1 - work_beta} for this effect size.  Default is 1.
@@ -27,18 +28,6 @@
 #'   target_power = 0.75,
 #'   sample_size = TRUE
 #'   )
-#' 
-#' # Final analysis
-#' final_analysis <- adaptive_analysis_norm_local(
-#'   overall_sig_level = 0.025,
-#'   min_effect_size = -log(0.65),
-#'   times = c(9.18, 20.02, 24.86),
-#'   stats = c(4.35, 11.11, 14.84),
-#'   final_analysis = TRUE
-#'   )
-#' print( with(final_analysis, data.frame(analysis=0:par$analyses, time=par$times,
-#'   intercept=char$intercept, stat=par$stats, boundary=char$boundary,
-#'   pr_cond_err=char$cond_type_I_err, reject_H0=char$rej_H0)) )
 #' @seealso
 #' \code{\link{sample_size_norm_local}}.
 #' @importFrom stats dnorm pnorm qnorm

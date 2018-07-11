@@ -37,7 +37,8 @@ with full flexibility.
 Normality with known variance is assumed for the test statistic
 (more accurately, the test statistic is assumed to follow Brownian motion.)
 Null hypothesis is fixed at 0 without loss of generality.
-No procedure to calculate p-value or confidence intervals is employed.
+Exact p-value, median unbiased estimate and confidence limits proposed by Gao et al. (2013) can also be calculated.
+For detailed illustration, see \code{vignette("adpss_ex")}.
 }
 \examples{
 # Construct an initial working test
@@ -52,22 +53,10 @@ sample_size_norm_global(
   target_power = 0.75,
   sample_size = TRUE
   )
-
-# Final analysis
-final_analysis <- adaptive_analysis_norm_global(
-  initial_test = init_work_test,
-  times = c(9.18, 20.02, 24.86),
-  stats = c(4.35, 11.11, 14.84),
-  costs = c(1545.278, 1471.727),
-  final_analysis = TRUE,
-  estimate = FALSE
-  )
-print( with(final_analysis, data.frame(analysis=0:par$analyses, time=par$times,
-  cost=char$cost0, stat=par$stats, boundary=char$boundary, pr_cond_err=char$cond_type_I_err,
-  reject_H0=char$rej_H0)) )
 }
 \references{
 Kashiwabara, K., Matsuyama, Y. An efficient adaptive design approximating fixed sample size designs. In preparation.
+Gao, P., Liu, L., Mehta, C. (2013) Exact inference for adaptive group sequential designs. Stat Med 32: 3991-4005.
 }
 \seealso{
 \code{\link{work_test_norm_global}} and \code{\link{sample_size_norm_global}}.
