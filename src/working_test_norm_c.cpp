@@ -3057,6 +3057,7 @@ Rcpp::List exact_est_norm_c(
   Rcpp::List rcc(max_kk);
   rU_k[0] = init_par["U_k"];
   rcc[0] = init_char["boundary"];
+  vcost0.at(0) = init_par["cost0"];
 
   // init_test should be prev_time = time = next_time = 0;
   doubleVar[0] = init_par["prev_time"];
