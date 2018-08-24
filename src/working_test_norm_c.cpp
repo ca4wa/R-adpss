@@ -129,6 +129,129 @@ static double bisection_inverse(double (*fx)(double, void *), double y, void *in
   }
 }
 
+/*
+static double bisection_inverse_print(double (*fx)(double, void *), double y, void *info,
+  double sol_l = 0, double sol_u = 10, 
+  bool larger = false, bool smaller = false, bool exact = false,
+  double prec = 1e-8) {
+    Rcpp::Rcout << "# bisection_inverse # START" << std::endl;
+
+  // Search target range //
+  double itv = sol_u - sol_l;
+
+    //Rcpp::Rcout << "# bisection_inverse # fx(lower_lim) = fx(" << sol_l << ")" << std::endl;
+  double fx_l = (*fx)(sol_l, info);
+    //Rcpp::Rcout << "# bisection_inverse # fx(lower_lim) = fx(" << sol_l << ") = " << fx_l << std::endl;
+    //Rcpp::Rcout << "# bisection_inverse # fx(upper_lim) = fx(" << sol_u << ")" << std::endl;
+  double fx_u = (*fx)(sol_u, info);
+    //Rcpp::Rcout << "# bisection_inverse # fx(upper_lim) = fx(" << sol_u << ") = " << fx_u << std::endl;
+  int sgn = (fx_l < fx_u) - (fx_l > fx_u);
+    //glb_sgn = sgn;
+    Rcpp::Rcout << "# bisection_inverse # ..... sol_l = " << sol_l << "; fx_l = " << fx_l 
+      << "; sol_u = " << sol_u << "; fx_u = " << fx_u << "; sign = " << sgn << "." << std::endl;
+
+  fx_l = sgn * fx_l;
+  fx_u = sgn * fx_u;
+  y = sgn * y;
+
+  // Sub Settings //
+  if ( exact ) { prec = 0; smaller = false; larger = false; }
+  if ( prec == 0 ) { exact = TRUE; smaller = FALSE; larger = FALSE; }
+  if ( larger ) { smaller = FALSE; exact = FALSE; }
+  if ( smaller ) { larger = FALSE; exact = FALSE; }
+  if ( sgn == -1 && !exact ) { larger = !larger; smaller = !smaller; }
+
+    Rcpp::Rcout << "# bisection_inverse # ..... Passed initial check" << std::endl;
+
+  // Search //
+  int ii = 0;
+  while( 1 ){
+    R_CheckUserInterrupt();
+    Rcpp::Rcout << "# bisection_inverse # ..... Search solution range [" << sol_l << ", " << sol_u << "]" << std::endl;
+    Rcpp::Rcout << "# bisection_inverse # ..... sol_l = " << sol_l << "; fx_l = " << fx_l 
+      << "; sol_u = " << sol_u << "; fx_u = " << fx_u << "; sign = " << sgn << "." << std::endl;
+    if ( fx_l <= y && fx_u >= y ) {
+      // Found //
+      break;
+    } else if ( fx_l < y && fx_u < y ) {
+      // x > sol_u //
+      sol_u = sol_u + itv;
+      sol_l = sol_l + itv;
+      fx_l = fx_u;
+      fx_u = sgn * (*fx)(sol_u, info);
+    } else if ( fx_l > y && fx_u > y ) {
+      // x < sol_l //
+      sol_u = sol_u - itv;
+      sol_l = sol_l - itv;
+      fx_u = fx_l;
+      fx_l = sgn * (*fx)(sol_l, info);
+    }
+    ii += 1;
+    Rcpp::Rcout << "ii: " << ii << std::endl;
+  }
+  Rcpp::Rcout << "# bisection_inverse # Solution lies between: [" << sol_l << ", " << sol_u << "]" << std::endl;
+
+  // Search solution //
+  Rcpp::Rcout << "# bisection_inverse # Is exact solution on the bound?" << std::endl;
+  double sol;
+  // Exact solution is on range limit //
+  if ( fx_l == y ){
+    sol = sol_l;
+    //Rcpp::Rcout << "# bisection_inverse # Lower bound is exact." << std::endl;
+    //Rcpp::Rcout << "# bisection_inverse # RETURN" << std::endl;
+    return sol;
+  } else if ( fx_u == y ){
+    sol = sol_u;
+    //Rcpp::Rcout << "# bisection_inverse # Upper bound is exact." << std::endl;
+    //Rcpp::Rcout << "# bisection_inverse # RETURN" << std::endl;
+    return sol;
+  }
+
+  // Search //
+  Rcpp::Rcout << "# bisection_inverse # Search solution." << std::endl;
+  double step = itv / 2., fx_m, fx_mw;
+  sol = sol_l + step;
+  while(1){
+    R_CheckUserInterrupt();
+    fx_m = (*fx)(sol, info);
+    fx_mw = sgn * fx_m;
+    Rcpp::Rcout << "# bisection_inverse # ..... x: " << sol << "; fx: " << fx_m << "." << std::endl;  //%%%%%%%%
+    if ( fx_mw == y ) {
+      // Exact solution //
+        //Rcpp::Rcout << "# bisection_inverse # RETURN" << std::endl;
+      return sol;
+    } else if ( fx_mw < y ) {
+      // fx_l < x < fx_m //
+      if ( smaller && step <= prec ) {
+        //Rcpp::Rcout << "# bisection_inverse # RETURN" << std::endl;
+        return sol;
+      } else if ( larger && step  <= prec ) {
+        //Rcpp::Rcout << "# bisection_inverse # RETURN" << std::endl;
+        return sol_u;
+      } else {
+        fx_l = fx_mw;
+        sol_l = sol;
+        step = step / 2.;
+        sol = sol + step;
+      }
+    } else if ( fx_mw > y ) {
+      // fx_m < x < fx_u //
+      if ( larger && step <= prec ) {
+        //Rcpp::Rcout << "# bisection_inverse # RETURN" << std::endl;
+        return sol;
+      } else if ( smaller && step  <= prec ) {
+        //Rcpp::Rcout << "# bisection_inverse # RETURN" << std::endl;
+        return sol_l;
+      } else {
+        fx_u = fx_mw;
+        sol_u = sol;
+        step = step / 2.;
+        sol = sol - step;
+      }
+    }
+  }
+}
+*/
 
 // my struct base;
 struct base {
@@ -1462,7 +1585,7 @@ const double tol_cost = 1e-8) {
   }
   U_k += analysis;
   std::vector<double> vU_k0 = vU_k;
-  if ( analysis ) { //..
+  if ( analysis ) { //.. // [deletion of the prev_time]
     vU_k.erase(vU_k.begin());
   }
   work_KK -= analysis;
@@ -1795,7 +1918,7 @@ const double tol_cost = 1e-8) {
   //-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-//
 
     //Rcpp::Rcout << "# TEST # " << 1 << std::endl;
-  if( analysis ) { vU_k.erase(vU_k.begin() + 0); }
+  //if( analysis ) { vU_k.erase(vU_k.begin() + 0); } // this has been done at the place labeled [deletion of the prev_time]. comment out at Aug 14, 2018
   Rcpp::List d_par = Rcpp::List::create(
     Rcpp::Named("overall_sig_level") = overall_sig_level,
     Rcpp::Named("work_beta") = work_beta,
@@ -2546,22 +2669,24 @@ const int simpson_div = 6) {
   //int intVar[8] = {};
 
   double* U_k = (*pvU_k).data();
+std::vector<double> vU_k = (*pvU_k);
   int work_KK = (*pvU_k).size() - 1;
-  int work_KK_1 = work_KK + 1; 
-  double* cc = (*pvcc).data();
+  int work_KK_1 = work_KK + 1;
+std::vector<double> vcc = (*pvcc);
+  //double* cc = (*pvcc).data();
 
     //for ( int kk = 0; kk < work_KK_1; kk++ ) {
     //  Rcpp::Rcout << "# pr_rej_H0 # U_k[ " << kk << " ] = " << U_k[kk] << "; boundary = " << cc[kk] << std::endl;
     //}
 
   std::vector<double> vdiv_unit(work_KK_1);
-  double* div_unit = vdiv_unit.data();
+  //double* div_unit = vdiv_unit.data(); //..
   std::vector<int> vup_wing_units(work_KK_1);
-  int* up_wing_units = vup_wing_units.data();
+  //int* up_wing_units = vup_wing_units.data(); //..
   std::vector<int> vlw_wing_units(work_KK_1);
-  int* lw_wing_units = vlw_wing_units.data();
+  //int* lw_wing_units = vlw_wing_units.data(); //..
   std::vector<int> vwing_l(work_KK_1);
-  int* wing_l = vwing_l.data();
+  //int* wing_l = vwing_l.data(); //..
 
     //Rcpp::Rcout << "time: " << time << std::endl;
     //Rcpp::Rcout << "stat: " << stat << std::endl;
@@ -2579,32 +2704,45 @@ const int simpson_div = 6) {
   // simpson_div
   int xdev_l = 6 * simpson_div - 1;
   std::vector<double> vxdev(xdev_l);
-  double* xdev = vxdev.data();
+  //double* xdev = vxdev.data(); //..
   for ( int ii = 1; ii < simpson_div; ii++ ) {
-    xdev[ii - 1] = 3 + 4 * log( (double) simpson_div / (double) ii );
+    //xdev[ii - 1] = 3 + 4 * log( (double) simpson_div / (double) ii );
+    vxdev.at(ii - 1) = 3 + 4 * log( (double) simpson_div / (double) ii ); //..
   }
   for ( int ii = 0; ii < (2 * simpson_div + 1); ii++ ) {
-    xdev[simpson_div - 1 + ii] = 3 - (double) 3 * ii / (double) (2 * simpson_div);
+    //vxdev[simpson_div - 1 + ii] = 3 - (double) 3 * ii / (double) (2 * simpson_div);
+    vxdev.at(simpson_div - 1 + ii) = 3 - (double) 3 * ii / (double) (2 * simpson_div); //..
   }
   for ( int ii = 0; ii < (3 * simpson_div - 1); ii++ ) {
-    xdev[ii + 3 * simpson_div] = -xdev[3 * simpson_div - 2 - ii];
+    //xdev[ii + 3 * simpson_div] = -xdev[3 * simpson_div - 2 - ii];
+    vxdev.at(ii + 3 * simpson_div) = -vxdev.at(3 * simpson_div - 2 - ii); //..
   }
 
   for ( int kk = 0; kk < work_KK_1; kk++ ) {
-    div_unit[kk] = sqrt(U_k[kk] - U_k[kk - 1 + (kk == 0)]); // this div_unit is sqrt(diff(U_k));
-    div_unit[kk] = div_unit[kk] * 3 / (double) (2 * simpson_div);
+    //div_unit[kk] = sqrt(U_k[kk] - U_k[kk - 1 + (kk == 0)]); // this div_unit is sqrt(diff(U_k));
+    vdiv_unit.at(kk) = sqrt(vU_k.at(kk) - vU_k.at(kk - 1 + (kk == 0))); // this div_unit is sqrt(diff(U_k)); //..
+    //div_unit[kk] = div_unit[kk] * 3 / (double) (2 * simpson_div);
+    vdiv_unit.at(kk) = vdiv_unit.at(kk) * 3 / (double) (2 * simpson_div); //..
       //Rcpp::Rcout << "div_unit: " << div_unit[kk] << std::endl;
-    up_wing_units[kk] = ceil(cc[kk] / div_unit[kk]);
+    //up_wing_units[kk] = ceil(cc[kk] / div_unit[kk]);
+    vup_wing_units.at(kk) = ceil(vcc.at(kk) / vdiv_unit.at(kk)); //..
     //lw_wing_units[kk] = ceil((-sqrt(U_k[kk]) * *xdev) / div_unit[kk]);
-    lw_wing_units[kk] = ceil((-sqrt(U_k[kk]) * *xdev + effect_size * U_k[kk]) / div_unit[kk]);
+    //lw_wing_units[kk] = ceil((-sqrt(U_k[kk]) * *xdev + effect_size * U_k[kk]) / div_unit[kk]);
+    vlw_wing_units.at(kk) = ceil((-sqrt(vU_k.at(kk)) * vxdev.at(0) + effect_size * vU_k.at(kk)) / vdiv_unit.at(kk)); //..
     //doubleVar[0] = ceil((-sqrt(U_k[kk]) * *xdev) / div_unit[kk]);
-    doubleVar[0] = -abs(up_wing_units[kk]);
-    doubleVar[1] = up_wing_units[kk] - 1;
-    lw_wing_units[kk] = doubleVar[(int) (doubleVar[0] > doubleVar[1])];
+    //doubleVar[0] = -abs(up_wing_units[kk]);
+    doubleVar[0] = -abs(vup_wing_units.at(kk)); //..
+    //doubleVar[1] = up_wing_units[kk] - 1;
+    doubleVar[1] = vup_wing_units.at(kk) - 1; //..
+    //lw_wing_units[kk] = doubleVar[(int) (doubleVar[0] > doubleVar[1])];
+    vlw_wing_units.at(kk) = doubleVar[(int) (doubleVar[0] > doubleVar[1])]; //..
     //lw_wing_units[kk] = ceil((-sqrt(U_k[kk]) * *xdev) / div_unit[kk]);
-      up_wing_units[0] = 0;
-      lw_wing_units[0] = 0;
-    wing_l[kk] = up_wing_units[kk] - lw_wing_units[kk] + 1;
+      //up_wing_units[0] = 0;
+      vup_wing_units.at(0) = 0; //..
+      //lw_wing_units[0] = 0;
+      vlw_wing_units.at(0) = 0; //..
+    //wing_l[kk] = up_wing_units[kk] - lw_wing_units[kk] + 1;
+    vwing_l.at(kk) = vup_wing_units.at(kk) - vlw_wing_units.at(kk) + 1; //..
       //Rcpp::Rcout << "up_wing_units: " << up_wing_units[kk] << "; lw_wing_units: " << lw_wing_units[kk] << "; wing_l: " << wing_l[kk] << std::endl;
   }
 
@@ -2619,47 +2757,58 @@ const int simpson_div = 6) {
   }
   for ( int kk = 0; kk < work_KK_1; kk++ ) {
     double* ss0 = vss0[kk].data();
-    for ( int ii = 0; ii < wing_l[kk]; ii++ ) {
-      ss0[ii] = (kk > 0) * (up_wing_units[kk] - ii) * div_unit[kk];
+    //for ( int ii = 0; ii < wing_l[kk]; ii++ ) {
+    for ( int ii = 0; ii < vwing_l.at(kk); ii++ ) { //..
+      //ss0[ii] = (kk > 0) * (up_wing_units[kk] - ii) * div_unit[kk];
+      ss0[ii] = (kk > 0) * (vup_wing_units.at(kk) - ii) * vdiv_unit.at(kk); //..
     }
-    ss0[0] = cc[kk];
+    //ss0[0] = cc[kk];
+    ss0[0] = vcc.at(kk); //..
       //Rcpp::Rcout << "stage: " << kk << "; min(ss0): " << ss0[wing_l[kk] - 1] << "; max(ss0): " << ss0[0] << std::endl;
   }
   vss0[0].at(0) = 0;
 
   std::vector<int> vgg_odd_l(work_KK_1);
-  int* gg_odd_l = vgg_odd_l.data();
+  //int* gg_odd_l = vgg_odd_l.data(); //..
   std::vector<double> vgg_odd[105];  // num of basic_schedule <= 100
   for ( int kk = 0; kk < work_KK_1; kk++ ) {
-    gg_odd_l[kk] = wing_l[kk];
-    vgg_odd[kk].reserve(gg_odd_l[kk]);
-    vgg_odd[kk].resize(gg_odd_l[kk]);
+    //gg_odd_l[kk] = wing_l[kk];
+    vgg_odd_l.at(kk) = vwing_l.at(kk); //..
+    //vgg_odd[kk].reserve(gg_odd_l[kk]);
+    vgg_odd[kk].reserve(vgg_odd_l.at(kk)); //..
+    //vgg_odd[kk].resize(gg_odd_l[kk]);
+    vgg_odd[kk].resize(vgg_odd_l.at(kk));
       //Rcpp::Rcout << "gg_odd_l[" << kk << "]: " << gg_odd_l[kk] << std::endl;
   }
   std::vector<int> vgg_l(work_KK_1);
-  int* gg_l = vgg_l.data();
+  //int* gg_l = vgg_l.data(); //..
   std::vector<double> vgg[105];  // num of basic_schedule <= 100
   for ( int kk = 0; kk < work_KK_1; kk++ ) {
-    gg_l[kk] = gg_odd_l[kk] * 2 - 1;
-    vgg[kk].reserve(gg_l[kk]);
-    vgg[kk].resize(gg_l[kk]);
+    //gg_l[kk] = gg_odd_l[kk] * 2 - 1;
+    vgg_l.at(kk) = vgg_odd_l.at(kk) * 2 - 1; //..
+    //vgg[kk].reserve(gg_l[kk]);
+    vgg[kk].reserve(vgg_l.at(kk));
+    //vgg[kk].resize(gg_l[kk]);
+    vgg[kk].resize(vgg_l.at(kk));
       //Rcpp::Rcout << "gg_l[" << kk << "]: " << gg_l[kk] << std::endl;
   }
 
   std::vector<double> vpr_rej_H0[105];  // num of basic_schedule <= 100
   for ( int kk = 0; kk < work_KK_1; kk++ ) {
-    vpr_rej_H0[kk].reserve(gg_l[kk]);
-    vpr_rej_H0[kk].resize(gg_l[kk]);
+    //vpr_rej_H0[kk].reserve(gg_l[kk]);
+    vpr_rej_H0[kk].reserve(vgg_l.at(kk));
+    //vpr_rej_H0[kk].resize(gg_l[kk]);
+    vpr_rej_H0[kk].resize(vgg_l.at(kk));
   }
   std::vector<int> vcc_odd_n(work_KK_1);
-  int* cc_odd_n = vcc_odd_n.data();
+  //int* cc_odd_n = vcc_odd_n.data(); //..
   std::vector<int> vcc_n(work_KK_1);
-  int* cc_n = vcc_n.data();
+  //int* cc_n = vcc_n.data(); //..
 
   // Initialize (dummy variables) //
   int gg_l_max = *std::max_element(vgg_l.begin(), vgg_l.end());
   std::vector<double> vval_k(gg_l_max);
-  double* val_k = vval_k.data();
+  //double* val_k = vval_k.data(); //..
   // Set all cc_odd_n and cc_n to -1 //
   std::fill(vcc_odd_n.begin(), vcc_odd_n.end(), -1);
   std::fill(vcc_n.begin(), vcc_n.end(), -1);
@@ -2673,21 +2822,30 @@ const int simpson_div = 6) {
   str_base.stat = stat;
   str_base.xdev = vxdev.data(); //
   str_base.xdev_l = xdev_l;
-  str_base.div_unit = div_unit;
-  str_base.up_wing_units = up_wing_units;
-  str_base.wing_l = wing_l;
+  //str_base.div_unit = div_unit;
+  str_base.div_unit = vdiv_unit.data(); //..
+  //str_base.up_wing_units = up_wing_units;
+  str_base.up_wing_units = vup_wing_units.data();
+  //str_base.wing_l = wing_l;
+  str_base.wing_l = vwing_l.data(); //..
 
   struct result str_result;
   str_result.vss0 = vss0;
-  str_result.gg_odd_l = gg_odd_l;
+  //str_result.gg_odd_l = gg_odd_l;
+  str_result.gg_odd_l = vgg_odd_l.data(); //..
   str_result.vgg_odd = vgg_odd;
-  str_result.gg_l = gg_l;
+  //str_result.gg_l = gg_l;
+  str_result.gg_l = vgg_l.data(); //..
   str_result.vgg = vgg;
   str_result.vpr_rej_H0 = vpr_rej_H0;
-  str_result.cc_odd_n = cc_odd_n;
-  str_result.cc_n = cc_n;
-  str_result.cc = cc;
-  str_result.val_k = val_k;
+  //str_result.cc_odd_n = cc_odd_n;
+  str_result.cc_odd_n = vcc_odd_n.data(); //..
+  //str_result.cc_n = cc_n;
+  str_result.cc_n = vcc_n.data(); //..
+  //str_result.cc = cc;
+  str_result.cc = vcc.data(); //..
+  //str_result.val_k = val_k;
+  str_result.val_k = vval_k.data(); //..
 
   struct ground str_ground;
   str_ground.str_base = str_base;
@@ -2729,7 +2887,7 @@ const double effect_size,
 struct base_test* ptest
 ) {
 
-  ////Rcpp::Rcout << "# project_power # START" << std::endl;
+  //Rcpp::Rcout << "# project_power # START" << std::endl;
   Rcpp::List initial_test = *(ptest->test);
   std::vector<double> vtimes = *(ptest->times);
   std::vector<double> vstats = *(ptest->stats);
@@ -2941,7 +3099,7 @@ struct base_test* ptest
       }
       *doubleVar = pr_rej_H0_sol1(fin_cc, &str_arg_pr_rej_H0);
       //Rcpp::Rcout << "# project_power # Stage " << kk << "; temp. conditional power = " << *doubleVar << "; fin_cc = " << fin_cc << std::endl;
-    }
+    } // ‚±‚±‚Ü‚ÅOK
 
       // Projected working test;
       //vU_k = d_par["U_k"];
@@ -2972,9 +3130,19 @@ struct base_test* ptest
       //Rcpp::Rcout << "# project_power # Stage " << kk << "; cond power (effect_size = " << effect_size << ") = " << cond_power << std::endl;
   }
     //Rcpp::Rcout << "# project_power # effect_size = " << effect_size << "; conditional power = " << cond_power << "; fin_kk = " << fin_kk << "; fin_time = " << vU_k.at(1) << "; fin_cc = " << fin_cc << std::endl;
-    ////Rcpp::Rcout << "# project_power # effect_size = " << effect_size << "; conditional power = " << cond_power << std::endl;
-    ////Rcpp::Rcout << "# project_power # END" << std::endl;
+
+    //Rcpp::Rcout << "# project_power # effect_size = " << effect_size << "; conditional power = " << cond_power << std::endl;
+    //Rcpp::Rcout << "# project_power # END" << std::endl;
   return cond_power;
+}
+
+
+const double pr_rej_H0_sol2(
+const double effect_size,
+struct arg_pr_rej_H0* parg
+) {
+  double prob = pr_rej_H0(parg->vU_k, parg->vcc, parg->stat, effect_size, parg->simpson_div);
+  return prob;
 }
 
 
@@ -3045,7 +3213,7 @@ Rcpp::List exact_est_norm_c(
   //-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-//
   //=== Dummy Box ===//
   double doubleVar[8] = {};
-  //int intVar[8] = {};
+  int intVar[8] = {};
   Rcpp::NumericVector rvec;
 
   //=== Initial Working Test ===//
@@ -3064,15 +3232,21 @@ Rcpp::List exact_est_norm_c(
   doubleVar[1] = init_par["time"];
   doubleVar[2] = init_par["next_time"];
   if( !((doubleVar[0] == 0) && (doubleVar[1] == 0) && (doubleVar[2] == 0)) ) {
-    Rcpp::stop("Initial working test should be loaded through 'inital_test'.");
+    Rcpp::stop("Initial working test should be loaded through the argument 'inital_test'.");
   }
 
-  std::vector<double> vU0 = init_par["U_0"];
+  std::vector<double> vU00 = init_par["U_0"];
+  std::vector<double> vU0 = vU00;
   int work_KK_1 = vU0.size();
   //int work_KK = work_KK_1 - 1;
   //double* U0 = vU0.data();
   Rcpp::NumericVector nvU0(work_KK_1); // std::vector to Rcpp::NumericVector
   std::copy(vU0.begin(), vU0.end(), nvU0.begin());
+    //Rcpp::Rcout << "# exact_est_norm_c # Check 1 [START]" << std::endl;
+    //for ( int kkk = 0; kkk < (vU0.end() - vU0.begin()); kkk++ ) {
+    //  *doubleVar = nvU0.at(kkk);
+    //}
+    //Rcpp::Rcout << "# exact_est_norm_c # Check 1 [END]" << std::endl;
     //for ( int kk = 0; kk < work_KK_1; kk++ ) {
     //  Rcpp::Rcout << "nvU0.at(" << kk << ") = " << nvU0.at(kk) << std::endl;
     //}
@@ -3088,7 +3262,7 @@ Rcpp::List exact_est_norm_c(
   double stat;
   //double* cost0 = vcost0.data();
   //*cost0 = init_par["cost0"];
-    //Rcpp::Rcout << "# exact_est_norm_c # Stage " << 0 << "; cost0 = " << *cost0 << std::endl;
+    //Rcpp::Rcout << "# exact_est_norm_c # Stage " << 0 << "; cost0 = " << vcost0.at(0) << std::endl;
 
   //-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-//
   // Analysis                                                                  //
@@ -3134,7 +3308,7 @@ Rcpp::List exact_est_norm_c(
       d_par = work_test["par"];
       d_char = work_test["char"];
       vcost0.at(kk) = d_par["cost0"];
-        //Rcpp::Rcout << "# exact_est_norm_c # Stage " << kk << "; cost0 = " << cost0[kk] << std::endl;
+        //Rcpp::Rcout << "# exact_est_norm_c # Stage " << kk << "; cost0 = " << vcost0.at(kk) << std::endl;
     }
 
     //result1 <- work_test_norm_c(prev_time = 0, time=9.2, stat=4.35, cost_type_1_err = test1$par$cost0, min_effect_size = -log(0.65), simpson_div = 4)
@@ -3176,6 +3350,11 @@ Rcpp::List exact_est_norm_c(
     rvec = d_char["boundary"]; // U0 as an dummy;
     vU0.resize(rvec.size());
     std::copy(rvec.begin(), rvec.end(), vU0.begin());
+      //Rcpp::Rcout << "# exact_est_norm_c # Check 2 [START]" << std::endl;
+      //for ( int kkk = 0; kkk < (rvec.end() - rvec.begin()); kkk++ ) {
+      //  *doubleVar = vU0.at(kkk);
+      //}
+      //Rcpp::Rcout << "# exact_est_norm_c # Check 2 [END]" << std::endl;
     vboundary.at(kk) = vU0.at(0);
 
     if ( (cond_alpha >= 1) || (kk == (max_kk - sig_level_exhaustive - 1)) ) break;
@@ -3206,15 +3385,17 @@ Rcpp::List exact_est_norm_c(
   std::fill(vrej_H0.begin(), vrej_H0.end(), false);
   vrej_H0.at(kk) = (cond_alpha >= 1);
 
-
+  int stp_kk = kk;
   //-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-//
   // Projection                                                                //
   //-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-//
   double pval, mue; // p-value, median unbiased est
   std::vector<double> vest(2); // , lower lim, upper lim
+  double lbb_pval, lbb_mue; // lower bound-based est
+  std::vector<double> vlbb_est(2); // lower bound-based est
   struct base_test str_test;
   if ( estimate ) {
-      //Rcpp::Rcout << "# exact_est_norm_c # Stage " << kk << "; prev_time = " << prev_time << "; time = " << time << "; next_time = " << next_time << "; stat = " << stat << std::endl;
+      //Rcpp::Rcout << "# exact_est_norm_c # Stage " << stp_kk << "; prev_time = " << prev_time << "; time = " << time << "; next_time = " << next_time << "; stat = " << stat << std::endl;
 
     str_test.test = &initial_test;
     str_test.times = &vtimes;
@@ -3225,61 +3406,216 @@ Rcpp::List exact_est_norm_c(
     str_test.U_k = &rU_k;
     str_test.cc = &rcc;
 
-    *doubleVar = (1. - ci_coef) / 2.;
+      //for( int ii = 0; ii < vtimes.size(); ii++ ) {
+      //  Rcpp::Rcout << "vtimes.at(" << ii << ") = " << vtimes.at(ii) << std::endl;
+      //}
+      //for( int ii = 0; ii < vstats.size(); ii++ ) {
+      //  Rcpp::Rcout << "vstats.at(" << ii << ") = " << vstats.at(ii) << std::endl;
+      //}
+      //  Rcpp::Rcout << "sig_level_exhaustive = " << sig_level_exhaustive << std::endl;
+      //  Rcpp::Rcout << "ci_coef = " << ci_coef << std::endl;
+      //for( int ii = 0; ii < vcost0.size(); ii++ ) {
+      //  Rcpp::Rcout << "vcost0.at(" << ii << ") = " << vcost0.at(ii) << std::endl;
+      //}
+      //for( int kkk = 0; kkk < stp_kk; kkk++ ) {
+      //Rcpp::NumericVector vvv = rU_k[kkk];
+      //for( int ii = 0; ii < vvv.size(); ii++ ) {
+      //  Rcpp::Rcout << "rU_k[" << kkk << "].at(" << ii << ") = " << vvv.at(ii) << std::endl;
+      //}}
+      //for( int kkk = 0; kkk < stp_kk; kkk++ ) {
+      //Rcpp::NumericVector vvv = rcc[kkk];
+      //for( int ii = 0; ii < rcc.size(); ii++ ) {
+      //  Rcpp::Rcout << "rcc[" << kkk << "].at(" << ii << ") = " << vvv.at(ii) << std::endl;
+      //}}
+
+    double ciVar[8];
+    *ciVar = (1. - ci_coef) / 2.;
       //Rcpp::Rcout << "# exact_est_norm_c # ci_coef = " << ci_coef << std::endl;
 
     //double* est = vest.data();
     mue = stat / time; // temporarily MLE
-    doubleVar[2] = sqrt(1. / time); // naive SE for MLE
-    doubleVar[3] = -R::qnorm(*doubleVar, 0, 1, 1, 0);
-    doubleVar[5] = doubleVar[3] * doubleVar[2]; // CI wing
-      //Rcpp::Rcout << "# exact_est_norm_c # doubleVar[0] = " << doubleVar[0] << std::endl;
-      //Rcpp::Rcout << "# exact_est_norm_c # doubleVar[2] = " << doubleVar[2] << std::endl;
-      //Rcpp::Rcout << "# exact_est_norm_c # doubleVar[3] = " << doubleVar[3] << std::endl;
-      //Rcpp::Rcout << "# exact_est_norm_c # doubleVar[5] = " << doubleVar[5] << std::endl;
+    ciVar[2] = sqrt(1. / time); // naive SE for MLE
+    ciVar[3] = -R::qnorm(*ciVar, 0, 1, 1, 0);
+    ciVar[5] = ciVar[3] * ciVar[2]; // CI wing
+      //Rcpp::Rcout << "# exact_est_norm_c # ciVar[0] = " << ciVar[0] << std::endl;
+      //Rcpp::Rcout << "# exact_est_norm_c # ciVar[2] = " << ciVar[2] << std::endl;
+      //Rcpp::Rcout << "# exact_est_norm_c # ciVar[3] = " << ciVar[3] << std::endl;
+      //Rcpp::Rcout << "# exact_est_norm_c # ciVar[5] = " << ciVar[5] << std::endl;
 
-    if ( max_kk == 2 ) {
+    if ( stp_kk == 1 ) {  // "max_kk == 2" -> "stp_kk == 1"
       pval = R::pnorm(-stat / sqrt(time), 0, 1, 1, 0);
       // mue = MLE;
-      vest.at(0) = mue - doubleVar[5];
-      vest.at(1) = mue + doubleVar[5];
+      vest.at(0) = mue - ciVar[5];
+      vest.at(1) = mue + ciVar[5];
+
+      lbb_pval = pval;
+      lbb_mue = mue;
+      vlbb_est = vest;
     } else {
-      doubleVar[1] = project_power(mue, &str_test); // p-value at the MLE
-      doubleVar[4] = mue + -R::qnorm(doubleVar[1], 0, 1, 1, 0) * doubleVar[2];
-        //Rcpp::Rcout << "# exact_est_norm_c # Temp. Lower Conf Lim = " << doubleVar[4] - doubleVar[5] << std::endl;
-        //Rcpp::Rcout << "# exact_est_norm_c # Temp. Med Unbias Est = " << doubleVar[4] << std::endl;
-        //Rcpp::Rcout << "# exact_est_norm_c # Temp. Upper Conf Lim = " << doubleVar[4] + doubleVar[5] << std::endl;
+      ciVar[1] = project_power(mue, &str_test); // p-value at the MLE
+      ciVar[4] = mue + -R::qnorm(ciVar[1], 0, 1, 1, 0) * ciVar[2];
+        //Rcpp::Rcout << "# exact_est_norm_c # Temp. Lower Conf Lim = " << ciVar[4] - ciVar[5] << std::endl;
+        //Rcpp::Rcout << "# exact_est_norm_c # Temp. Med Unbias Est = " << ciVar[4] << std::endl;
+        //Rcpp::Rcout << "# exact_est_norm_c # Temp. Upper Conf Lim = " << ciVar[4] + ciVar[5] << std::endl;
 
   // Lower
-  //Rcpp::Rcout << "effect_size = " << doubleVar[4] - doubleVar[5] * 3/2 << std::endl;
-  //Rcpp::Rcout << "pval = " << project_power(doubleVar[4] - doubleVar[5] * 3/2, &str_test) << std::endl;
-  //Rcpp::Rcout << "effect_size = " << doubleVar[4] - doubleVar[5] / 2. << std::endl;
-  //Rcpp::Rcout << "pval = " << project_power(doubleVar[4] - doubleVar[5] / 2., &str_test) << std::endl;
+  //Rcpp::Rcout << "effect_size = " << ciVar[4] - ciVar[5] * 3/2 << std::endl;
+  //Rcpp::Rcout << "pval = " << project_power(ciVar[4] - ciVar[5] * 3/2, &str_test) << std::endl;
+  //Rcpp::Rcout << "effect_size = " << ciVar[4] - ciVar[5] / 2. << std::endl;
+  //Rcpp::Rcout << "pval = " << project_power(ciVar[4] - ciVar[5] / 2., &str_test) << std::endl;
   // Upper
-  //Rcpp::Rcout << "effect_size = " << doubleVar[4] + doubleVar[5] * 3 / 2. << std::endl;
-  //Rcpp::Rcout << "pval = " << project_power(doubleVar[4] + doubleVar[5] * 3 / 2., &str_test) << std::endl;
+  //Rcpp::Rcout << "effect_size = " << ciVar[4] + ciVar[5] * 3 / 2. << std::endl;
+  //Rcpp::Rcout << "pval = " << project_power(ciVar[4] + ciVar[5] * 3 / 2., &str_test) << std::endl;
   //Rcpp::stop("complete");
-     Rcpp::Rcout << "# exact_est_norm_c # Computing P-value" << std::endl;
+   Rcpp::Rcout << "Computing exact estimates." << std::endl;
+     //Rcpp::Rcout << "# exact_est_norm_c # Exact inference [START]" << std::endl;
+     //Rcpp::Rcout << "# exact_est_norm_c # Computing exact P-value" << std::endl;
       pval = project_power(0, &str_test); // p-value at the null
       // Median Unbiased Est
-     Rcpp::Rcout << "# exact_est_norm_c # Computing median unbiased estimator" << std::endl;
+
+     //Rcpp::Rcout << "# exact_est_norm_c # Computing exact median unbiased estimator" << std::endl;
       mue = bisection_inverse((double (*)(double, void*)) project_power,
-        0.5, &str_test, doubleVar[4] - doubleVar[5] / 2., doubleVar[4] + doubleVar[5] / 2.,
+        0.5, &str_test, ciVar[4] - ciVar[5] / 2., ciVar[4] + ciVar[5] / 2.,
         false, true, false, tol_est); // smaller
       // Lower Limit
-     Rcpp::Rcout << "# exact_est_norm_c # Computing lower confidence limit" << std::endl;
+     //Rcpp::Rcout << "# exact_est_norm_c # Computing exact lower confidence limit" << std::endl;
       vest.at(0) = bisection_inverse((double (*)(double, void*)) project_power,
-        *doubleVar, &str_test, doubleVar[4] - doubleVar[5] * 3/2, doubleVar[4] - doubleVar[5] / 2.,
+        *ciVar, &str_test, ciVar[4] - ciVar[5] * 3/2, mue,
         true, false, false, tol_est); // larger
       // Upper Limit
-     Rcpp::Rcout << "# exact_est_norm_c # Computing upper confidence limit" << std::endl;
+     //Rcpp::Rcout << "# exact_est_norm_c # Computing exact upper confidence limit" << std::endl;
       vest.at(1) = bisection_inverse((double (*)(double, void*)) project_power,
-        1 - *doubleVar, &str_test, doubleVar[4] + doubleVar[5] / 2., doubleVar[4] + doubleVar[5] * 3 / 2.,
+        1 - *ciVar, &str_test, mue, ciVar[4] + ciVar[5] * 3 / 2.,
         false, true, false, tol_est); // smaller
         //Rcpp::Rcout << "# exact_est_norm_c # P-value        = " << pval   << std::endl;
         //Rcpp::Rcout << "# exact_est_norm_c # Lower Conf Lim = " << est[0] << std::endl;
         //Rcpp::Rcout << "# exact_est_norm_c # Med Unbias Est = " << mue    << std::endl;
         //Rcpp::Rcout << "# exact_est_norm_c # Upper Conf Lim = " << est[1] << std::endl;
+     //Rcpp::Rcout << "# exact_est_norm_c # Exact inference [END]" << std::endl;
+
+      {
+   Rcpp::Rcout << "Computing approximate estimates." << std::endl;
+     //Rcpp::Rcout << "# exact_est_norm_c # Approx inference [START]" << std::endl;
+          //Rcpp::Rcout << "# exact_est_norm_c # stp_kk(max stage excluding t=0) = " << stp_kk << std::endl;
+        time = vtimes.at(stp_kk - 1);
+
+        vU0 = vU00;
+        int work_KK_1 = vU0.size();
+        int work_KK = work_KK_1 - 1;
+
+        // Current stage //
+        int time_kk = 0;
+        for ( int kk = 1; kk < work_KK_1; kk++ ) {
+          //*doubleVar = (U0[kk - 1] + U0[kk]) / 2.; // + 0.99 * (U0[kk + 1] - U0[kk]);
+          *doubleVar = (vU0.at(kk - 1) + vU0.at(kk)) / 2.; //..
+          time_kk += (*doubleVar < time);
+        }
+          //Rcpp::Rcout << "# sample_size_norm_c # time: " << time << "; time_kk: " << time_kk << std::endl;
+        *intVar = (time_kk == 0) && (time > 0);
+        intVar[1] = (time_kk == work_KK) && (time < vU0.at(work_KK));
+        if ( (*intVar + intVar[1]) > 0 ) {
+          vU0.insert(vU0.begin() + *intVar + intVar[1] * work_KK, 0);
+        }
+        work_KK_1 = vU0.size(); // added at Aug 20, 2018
+        time_kk += *intVar;
+        vU0.at(time_kk) = time;
+        Rcpp::NumericVector nvU0(work_KK_1); // std::vector to Rcpp::NumericVector
+        std::copy(vU0.begin(), vU0.end(), nvU0.begin());
+          //Rcpp::Rcout << "# exact_est_norm_c # Check 3 [START]" << std::endl;
+          //for ( int kkk = 0; kkk < (vU0.end() - vU0.begin()); kkk++ ) {
+          //  *doubleVar = nvU0.at(kkk);
+          //}
+          //Rcpp::Rcout << "# exact_est_norm_c # Check 3 [END]" << std::endl;
+
+        std::vector<double> vU_k(time_kk + 1);
+        std::copy(vU0.begin(), vU0.begin() + time_kk + 1, vU_k.begin());
+          //Rcpp::Rcout << "# exact_est_norm_c # Check 4 [START]" << std::endl;
+          //for ( int kkk = 0; kkk < (time_kk + 1); kkk++ ) {
+          //  *doubleVar = vU_k.at(kkk);
+          //}
+          //Rcpp::Rcout << "# exact_est_norm_c # Check 4 [END]" << std::endl;
+
+        vU_k.push_back(vtimes.at(stp_kk));
+        work_KK = vU_k.size() - 1;
+        work_KK_1 = work_KK + 1;
+          //for ( int ii = 0; ii < vU_k.size(); ii++ ) {
+          //  Rcpp::Rcout << "# sample_size_norm_c # vU_k.at(" << ii << ") = " << vU_k.at(ii) << std::endl;
+          //}
+
+        Rcpp::List work_test;
+        work_test = work_test_norm_c(
+          init_par["overall_sig_level"],  //overall_sig_level
+          init_par["work_beta"],  //work_beta
+          init_par["overall_sig_level"],  //cond_alpha
+          0,  //cost_type_1_err
+          0,  //cost_type_2_err
+          0,  //prev_cost
+          init_par["min_effect_size"],  //min_effect_size
+          0,  //effect_size
+          0,  //basic_schedule_num
+          0,  //basic_schedule_power
+          nvU0,  //basic_schedule
+          nvprior,  //prior_dist
+          0,  //prev_time
+          0,  //time
+          0,  //next_time
+          0,  //stat
+          false,  //input_check
+          false,  //out_process
+          init_par["simpson_div"],  //simpson_div
+          init_par["tol_boundary"],  //tol_boundary
+          init_par["tol_cost"]);  //tol_cost
+        d_par = work_test["par"];
+        d_char = work_test["char"];
+        std::vector<double> vwcc = d_char["boundary"];
+        std::vector<double> vcc(time_kk + 2);
+        std::copy(vwcc.begin(), vwcc.begin() + time_kk + 1, vcc.begin());
+          //Rcpp::Rcout << "# exact_est_norm_c # Check 5 [START]" << std::endl;
+          //for ( int kkk = 0; kkk < (time_kk + 1); kkk++ ) {
+          //  *doubleVar = vcc.at(kkk);
+          //}
+          //Rcpp::Rcout << "# exact_est_norm_c # Check 5 [END]" << std::endl;
+        vcc.at(time_kk + 1) = vstats.at(stp_kk);
+          //for ( int ii = 0; ii < vcc.size(); ii++ ) {
+          //  Rcpp::Rcout << "# sample_size_norm_c # vU_k.at(" << ii << ") = " << vU_k.at(ii) << "; vcc.at() = " << vcc.at(ii) << std::endl;
+          //}
+
+        struct arg_pr_rej_H0 str_arg_pr_rej_H0;
+        str_arg_pr_rej_H0.vU_k = &vU_k;
+        str_arg_pr_rej_H0.vcc = &vcc;
+        str_arg_pr_rej_H0.stat = 0;
+        str_arg_pr_rej_H0.simpson_div = init_par["simpson_div"];
+
+         // P-value
+          //Rcpp::Rcout << "# exact_est_norm_c # Computing lower bound-based P-value" << std::endl;
+        lbb_pval = pr_rej_H0_sol2(0, &str_arg_pr_rej_H0); // p-value at the null
+          //Rcpp::Rcout << "# exact_est_norm_c # Computing lower bound-based P-value: " << lbb_pval << std::endl;
+
+         // Median Unbiased Est
+          //Rcpp::Rcout << "# exact_est_norm_c # Computing lower bound-based median unbiased estimator" << std::endl;
+         lbb_mue = bisection_inverse((double (*)(double, void*)) pr_rej_H0_sol2,
+           0.5, &str_arg_pr_rej_H0, ciVar[4] - ciVar[5] / 2., ciVar[4] + ciVar[5] / 2.,
+           false, true, false, tol_est); // smaller
+          //Rcpp::Rcout << "# exact_est_norm_c # Computing lower bound-based median unbiased estimator: " << lbb_mue << std::endl;
+         // Lower Limit
+          //Rcpp::Rcout << "# exact_est_norm_c # Computing lower bound-based lower confidence limit" << std::endl;
+         vlbb_est.at(0) = bisection_inverse((double (*)(double, void*)) pr_rej_H0_sol2,
+           *ciVar, &str_arg_pr_rej_H0, ciVar[4] - ciVar[5] * 3/2, lbb_mue,
+           true, false, false, tol_est); // larger
+          //Rcpp::Rcout << "# exact_est_norm_c # Computing lower bound-based lower confidence limit: " << vlbb_est.at(0) << std::endl;
+         // Upper Limit
+          //Rcpp::Rcout << "# exact_est_norm_c # Computing lower bound-based upper confidence limit" << std::endl;
+         vlbb_est.at(1) = bisection_inverse((double (*)(double, void*)) pr_rej_H0_sol2,
+           1 - *ciVar, &str_arg_pr_rej_H0, lbb_mue, ciVar[4] + ciVar[5] * 3 / 2.,
+           false, true, false, tol_est); // smaller
+          //Rcpp::Rcout << "# exact_est_norm_c # Computing lower bound-based upper confidence limit: " << vlbb_est.at(1) << std::endl;
+
+          //Rcpp::Rcout << "# exact_est_norm_c # P-value        = " << lbb_pval   << std::endl;
+          //Rcpp::Rcout << "# exact_est_norm_c # Lower Conf Lim = " << vlbb_est.at(0) << std::endl;
+          //Rcpp::Rcout << "# exact_est_norm_c # Med Unbias Est = " << lbb_mue    << std::endl;
+          //Rcpp::Rcout << "# exact_est_norm_c # Upper Conf Lim = " << vlbb_est.at(1) << std::endl;
+          //Rcpp::Rcout << "# exact_est_norm_c # Approx inference [END]" << std::endl;
+      }
     }
   }
 
@@ -3296,7 +3632,7 @@ Rcpp::List exact_est_norm_c(
   );
   Rcpp::NumericVector rcost0;
   rcost0 = vcost0;
-  if ( final_analysis ) rcost0.at(vtimes.size() - 1) = NA_REAL;
+  if ( final_analysis && (vtimes.size() == max_kk) ) rcost0.at(vtimes.size() - 1) = NA_REAL; // '&& (vtimes.size() == max_kk)' was added at Aug 21, 2018.
   d_char = Rcpp::List::create(
     Rcpp::Named("cost0") = rcost0,
     Rcpp::Named("boundary") = vboundary,
@@ -3312,11 +3648,18 @@ Rcpp::List exact_est_norm_c(
       Rcpp::Named("median_unbiased") = mue,
       Rcpp::Named("conf_limits") = vest
       );
+    Rcpp::List d_lbb_est = Rcpp::List::create(
+      Rcpp::Named("p_value") = lbb_pval,
+      Rcpp::Named("ci_coef") = ci_coef,
+      Rcpp::Named("median_unbiased") = lbb_mue,
+      Rcpp::Named("conf_limits") = vlbb_est
+      );
 
     d_out = Rcpp::List::create(
       Rcpp::Named("par") = d_par,
       Rcpp::Named("char") = d_char,
-      Rcpp::Named("est") = d_est
+      Rcpp::Named("est") = d_est,
+      Rcpp::Named("lbb_est") = d_lbb_est
       );
   } else {
     d_out = Rcpp::List::create(

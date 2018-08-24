@@ -14,6 +14,8 @@
 #' @param times The sequence of times (sample size or information level) at which analyses were conducted.
 #' @param stats The sequence of test statistics.
 #' @param final_analysis If \code{TRUE}, the result input will be regarded as complete (no more data will be obtained) and the significance level will be exhausted. If \code{FALSE}, the current analysis will be regarded as an interim analysis and the significance level will be preserved.
+#' @param estimate If \code{TRUE}, p-value, median unbiased estimator and upper and lower confidence limits will be calculated.
+#' @param ci_coef The confidence coefficient. Default is 0.95.
 #' @param input_check Indicate whether or not the arguments input by user contain invalid values.
 #' @return List of results including the conditional Type I error probability.
 #' @references
@@ -38,6 +40,8 @@ adaptive_analysis_norm_local <- function(
   times = 0,
   stats = 0,
   final_analysis = TRUE,
+  estimate = FALSE,
+  ci_coef = 0.95,
   input_check = TRUE
   ) {
 
@@ -74,8 +78,9 @@ adaptive_analysis_norm_local <- function(
   #%%%%%%%% ADAPTIVE TEST %%%%%%%%#
   #=== ANALYSIS ===#
   ### Data ###
-  S.k <- sort(unique(c(0, S.k)))  # information level (time)
-  x.S.k <- sort(unique(c(0, x.S.k)))  # score
+  sel <- !duplicated(c(0, S.k))   # Added at Jul 27, 2018
+  S.k <- c(0, S.k)[sel]  # information level (time)   # Corrected at Jul 27, 2018
+  x.S.k <- c(0, x.S.k)[sel]  # score   # Corrected at Jul 27, 2018
   ana.num <- length(x.S.k)
 
   ### Initialize ###
@@ -107,7 +112,7 @@ adaptive_analysis_norm_local <- function(
     sgn <- -1
     while( (abs(xi.mod) > 1e-8 / 2) || (sgn > 0)  ){
       xi.mod <- xi.mod/2
-      cond.xi <- cond.xi + sgn * xi.mod
+      cond.xi <- cond.xi + sgn * xi.mod * (1 + (abs(xi.mod) <= 0.00000001/2))   # Corrected at Jul 27, 2018
       sq.d.t.k <- sqrt(d.t.k)
       r.d.t.k <- pnorm(-(cond.xi + rho * d.t.k / 2) / sq.d.t.k)
       alp.d.t.k <- exp(-cond.xi * rho + 
@@ -164,11 +169,66 @@ adaptive_analysis_norm_local <- function(
     H.b.k[ana.num] <- NA
   }
 
+
+  ### Estimation ###
+  if( estimate )
+  {
+    t.n <- S.k[ana.num]
+    t.m <- S.k[ana.num - 1]
+    x.n <- x.S.k[ana.num]
+    alpha_ci <- (1 - ci_coef) / 2 #0
+    mue <- x.n / t.n
+    sq.t.n.inv <- sqrt(1 / t.n) # 2
+    za_ci <- -qnorm(alpha_ci) # 3
+    ci_wing <- za_ci * sq.t.n.inv # 5
+    est <- rep(NA, 3)
+    if( ana.num == 2 )
+    {
+      pval <- pnorm(-x.n * sq.t.n.inv)
+      est <- mue + c(-1, 0, 1) * ci_wing
+    } else {
+      pval <- adaptive_p(overall_sig_level, min_effect_size, t.m, t.n, x.n, 0)
+      p_mle <- adaptive_p(overall_sig_level, min_effect_size, t.m, t.n, x.n, mue) # 1
+      mue_init <- mue - qnorm(p_mle) * sq.t.n.inv # 4
+
+      errs <- rep(FALSE, 3)
+      for( target_i in c(0, -1, 1) ) # MUE, Lower, Upper; bisection method
+      {
+        target_p <- c(alpha_ci, 0.5, 1 - alpha_ci)[target_i + 2]
+        est_mod <- ci_wing
+        est_l <- mue_init + est_mod * (-1/2 + target_i)
+        est_u <- mue_init + est_mod * ( 1/2 + target_i)
+        p_l <- adaptive_p(overall_sig_level, min_effect_size, t.m, t.n, x.n, est_l)
+        p_u <- adaptive_p(overall_sig_level, min_effect_size, t.m, t.n, x.n, est_u)
+        iter <- 1
+        while( (((p_u - target_p) * (target_p - p_l)) < 0) && (iter <= 100) ) 
+        {
+          sgn <- sign(target_p - p_u)
+          est_l <- est_l + sgn * est_mod
+          est_u <- est_u + sgn * est_mod
+          iter <- iter + 1
+        }
+        if( iter > 100 ) errs[1] <- TRUE
+        sgn <- 1
+        iter <- 1
+        est_m <- est_l
+        while( (est_mod > 1e-8) && (iter <= 100) )
+        {
+          est_mod <- est_mod / 2
+          est_m <- est_m + sgn * est_mod
+          p_m <- adaptive_p(overall_sig_level, min_effect_size, t.m, t.n, x.n, est_m)
+          sgn <- sign(target_p - p_m)
+          iter <- iter + 1
+        }
+        est[target_i + 2] <- est_m
+      }
+    }
+  }
+
   ### Processing for Display ###
   kk <- 0:(ana.num - 1)
   rej.H0 <- (H.alp.k >= 1)
   final <- (kk==(ana.num - fin))
-
 
   dpar <- list(
     overall_sig_level = overall_sig_level,
@@ -186,9 +246,79 @@ adaptive_analysis_norm_local <- function(
     rej_H0 = rej.H0
     )
 
-  res <- list(par = dpar, char = dchar)
+  if( estimate )
+  {
+    d_lbb_est <- list(p_value=pval, ci_coef=ci_coef, median_unbiased=est[2], conf_limits=est[c(1,3)])
+    res <- list(par = dpar, char = dchar, lbb_est = d_lbb_est)
+  } else {
+    res <- list(par = dpar, char = dchar)
+  }
+
   return( res )
 }
+
+adaptive_p <- function(
+  overall_sig_level = 0.025,
+  min_effect_size = 1,
+  time_m = 1,
+  time_n = 2,
+  stat_n = 0,
+  effect_size = 0
+  )
+{
+#  overall_sig_level = 0.025;   min_effect_size = 1;   time_m = 1;   time_n = 2;   stat_n = 0;   effect_size = 0
+
+  alpha.0 <- overall_sig_level
+  rho <- min_effect_size
+  mu.1 <- effect_size
+  mm <- time_m
+  nn <- time_n
+
+  # Rejection Probability until t = m (r_m.0) #
+  xi.0 <- -log(alpha.0) / rho
+  mu.1.sym <- mu.1 - 1/2 * rho
+  sq.mm <- sqrt(mm)
+  r_m.0 <- pnorm(-(xi.0 - mu.1.sym * mm) / sq.mm) +
+           exp(2 * xi.0 * mu.1.sym) * pnorm((-xi.0 - mu.1.sym * mm) / sq.mm)
+
+  ### Grid Points (Jennison & Turnbull (2000), chap.19) ###
+  rr <- 128
+  zdev1 <- -3 - 4 * log(rr / (1:(rr - 1)))
+  zdev2 <- -3 + 3 * (0:(4*rr)) / (2 * rr)
+  zdev <- c(zdev1, zdev2, -rev(zdev1))
+  zdev.l <- rr * 6 - 1
+
+  ### Rejection Probability of Final Analysis at t = n (r.m_n.m) ###
+  nn_mm <- nn - mm
+  # Grid points #
+  b.m <- xi.0 + (1/2 * rho) * mm
+  w.m.dev <- zdev * sq.mm + mu.1 * mm
+  w.m.sel <- (w.m.dev < b.m)
+  w.m.o <- c(w.m.dev[w.m.sel], b.m)
+
+  # Weight by Simpson's rule #
+  w.m.odd <- w.m.o
+  w.m.l <- length(w.m.odd)
+  w.m.d <- diff(w.m.odd)
+  w.m <- c(w.m.odd, w.m.odd[-w.m.l] + w.m.d / 2)
+  ww <- c((c(w.m.d, 0) + c(0, w.m.d)), w.m.d * 4) / 6
+
+  # Conditional probabilities #
+  r.m_w.m <- pmin(1, exp(-2 * xi.0 * (xi.0 + (1/2 * rho) * mm - w.m) / mm))
+  phi_w.m <- dnorm(w.m, mu.1 * mm, sq.mm)
+  pr_w.m <- phi_w.m * (1 - r.m_w.m)
+  r.m_n.m.w.m <- pnorm(-((stat_n - w.m) - mu.1 * nn_mm) / sqrt(nn_mm))
+
+  # Numerical integration #
+  r.m_n.m <- sum(pr_w.m * r.m_n.m.w.m * ww)
+
+  # Marginal power (r.m.n) #
+  r.m.n <- r_m.0 + r.m_n.m
+
+  return( r.m.n )
+}
+
+
 
 #' Calculate sample size or power for a locally efficient adaptive design.
 #'

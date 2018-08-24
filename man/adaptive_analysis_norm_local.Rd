@@ -5,7 +5,8 @@
 \title{Analyze data according to a locally efficient adaptive design.}
 \usage{
 adaptive_analysis_norm_local(overall_sig_level = 0.025, min_effect_size = 1,
-  times = 0, stats = 0, final_analysis = TRUE, input_check = TRUE)
+  times = 0, stats = 0, final_analysis = TRUE, estimate = FALSE,
+  ci_coef = 0.95, input_check = TRUE)
 }
 \arguments{
 \item{overall_sig_level}{Overall significance level in (0, 1). Default is 0.025.}
@@ -17,6 +18,10 @@ adaptive_analysis_norm_local(overall_sig_level = 0.025, min_effect_size = 1,
 \item{stats}{The sequence of test statistics.}
 
 \item{final_analysis}{If \code{TRUE}, the result input will be regarded as complete (no more data will be obtained) and the significance level will be exhausted. If \code{FALSE}, the current analysis will be regarded as an interim analysis and the significance level will be preserved.}
+
+\item{estimate}{If \code{TRUE}, p-value, median unbiased estimator and upper and lower confidence limits will be calculated.}
+
+\item{ci_coef}{The confidence coefficient. Default is 0.95.}
 
 \item{input_check}{Indicate whether or not the arguments input by user contain invalid values.}
 }
