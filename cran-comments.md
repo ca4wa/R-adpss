@@ -13,7 +13,5 @@ There were 1 NOTEs in win_builder:
 
 Maintainer: 'Kosuke Kashiwabara <kashiwabara-tky@umin.ac.jp>'
 
-New submission
-
 ## Downstream dependencies
 No dependencies.

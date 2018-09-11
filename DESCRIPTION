@@ -1,6 +1,6 @@
 Package: adpss
 Title: Design and Analysis of Locally or Globally Efficient Adaptive Designs
-Version: 0.1.0.9000
+Version: 0.1.1
 Authors@R: person("Kosuke", "Kashiwabara", email = "kashiwabara-tky@umin.ac.jp", role = c("aut", "cre"))
 Description: Provides the functions for planning and conducting a
   clinical trial with adaptive sample size determination. Maximal statistical
