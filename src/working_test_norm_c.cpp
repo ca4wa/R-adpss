@@ -7,7 +7,8 @@
 
 ////static int glb_sgn = 0;
 
-static double bisection_inverse(double (*fx)(double, void *), double y, void *info,
+template <class c1>
+static double bisection_inverse(double (*fx)(double, c1 *), double y, c1 *info,
   double sol_l = 0, double sol_u = 10, 
   bool larger = false, bool smaller = false, bool exact = false,
   double prec = 1e-8) {
@@ -130,7 +131,8 @@ static double bisection_inverse(double (*fx)(double, void *), double y, void *in
 }
 
 /*
-static double bisection_inverse_print(double (*fx)(double, void *), double y, void *info,
+template <class c1>
+static double bisection_inverse_print(double (*fx)(double, c1 *), double y, c1 *info,
   double sol_l = 0, double sol_u = 10, 
   bool larger = false, bool smaller = false, bool exact = false,
   double prec = 1e-8) {
@@ -586,60 +588,6 @@ static double future_risk(double xx, struct current_next* pinfo) {
   return xi1 + xi2;
 }
 
-/*
-// my function future_risk
-static double future_risk(double xx, struct current_next* pinfo) {
-  struct base_time* str_base_time;
-  str_base_time = &(pinfo->str_base_time);
-  struct base* str_base;
-  str_base = &(str_base_time->str_base);
-
-  int num_of_hypotheses;
-  num_of_hypotheses = str_base->num_of_hypotheses;
-  double* H_th = str_base->hypotheses;
-
-  std::vector<double> vxx_posterior(num_of_hypotheses);
-  double* xx_posterior = vxx_posterior.data();
-  vxx_posterior = vposterior(xx, str_base_time);
-
-  double post_H_th0 = *xx_posterior;
-  double post_H_th1 = 0;
-  for ( int ii = 1; ii < num_of_hypotheses; ii++ ) { 
-    post_H_th1 += xx_posterior[ii];
-  }
-
-  double* xx_1 = pinfo->gg_k_1;
-  int xx_1_l = pinfo->gg_k_1_l;
-  double* value_1 = pinfo->value_1;
-  double* doubleVar = pinfo->dummy;
-
-  //for( int ii = 0; ii < *xx_1_l; ii++ ) { 
-  //  Rcpp::Rcout << "gg[" << ii << "]; " << xx_1[ii] << std::endl;
-  //}
-
-  double dif, pr, ww, xi1, xi2;
-  double d_t = pinfo->time_1 - str_base_time->time;
-  double sq_d_t = sqrt(d_t);
-
-  xi1 = 0;
-  xi2 = 0;
-  for ( int ii = 0; ii < xx_1_l; ii++ ) {
-    for ( int jj = 0; jj < num_of_hypotheses; jj++ ) {  // for num_of_hypothesis;
-      dif = xx_1[ii] - xx;
-      pr = R::dnorm(dif, H_th[jj] * d_t, sq_d_t, 0);
-      ww = (xx_1[ii - 1 + (ii == 0)] - xx_1[ii + 1 - (ii == (xx_1_l - 1))]) * (1 + (ii % 2)) / 3.;
-      xi2 += ww * xx_posterior[jj] * pr * value_1[ii];
-      //if( ii == 66 ) { 
-      //  Rcpp::Rcout << dif << "; "<< pr << "; "<< ww << "; "<< xi2 << std::endl;
-      //}
-    }
-  }
-  xi1 = str_base->seq_w * post_H_th1 * d_t;
-    //Rcpp::Rcout << xi1 << "; " << xi2 << std::endl;
-
-  return xi1 + xi2;
-}
-*/
 
 // my function future_risk0
 static double future_risk0(double xx, struct current_next* pinfo) {
@@ -750,59 +698,6 @@ static double future_risk0(double xx, struct current_next* pinfo) {
   return xi2;
 }
 
-
-/*
-// my function future_risk
-static double future_risk0(double xx, struct current_next* pinfo) {
-  struct base_time* str_base_time;
-  str_base_time = &(pinfo->str_base_time);
-  struct base* str_base;
-  str_base = &(str_base_time->str_base);
-
-  int num_of_hypotheses;
-  num_of_hypotheses = str_base->num_of_hypotheses;
-  double* H_th = str_base->hypotheses;
-
-  std::vector<double> vxx_posterior(num_of_hypotheses);
-  double* xx_posterior = vxx_posterior.data();
-  vxx_posterior = vposterior(xx, str_base_time);
-
-  double post_H_th0 = *xx_posterior;
-  double post_H_th1 = 0;
-  for ( int ii = 1; ii < num_of_hypotheses; ii++ ) { 
-    post_H_th1 += xx_posterior[ii];
-  }
-
-  double* xx_1 = pinfo->gg_k_1;
-  int xx_1_l = pinfo->gg_k_1_l;
-  double* value_1 = pinfo->value_1;
-  double* doubleVar = pinfo->dummy;
-
-  //for( int ii = 0; ii < *xx_1_l; ii++ ) { 
-  //  Rcpp::Rcout << "gg[" << ii << "]; " << xx_1[ii] << std::endl;
-  //}
-
-  double dif, pr, ww, xi1, xi2;
-  double d_t = pinfo->time_1 - str_base_time->time;
-  double sq_d_t = sqrt(d_t);
-
-  xi2 = 0;
-  for ( int ii = 0; ii < xx_1_l; ii++ ) {
-    int jj = 0;  // for num_of_hypothesis;
-    dif = xx_1[ii] - xx;
-    pr = R::dnorm(dif, H_th[jj] * d_t, sq_d_t, 0);
-    ww = (xx_1[ii - 1 + (ii == 0)] - xx_1[ii + 1 - (ii == (xx_1_l - 1))]) * (1 + (ii % 2)) / 3.;
-    xi2 += ww * xx_posterior[jj] * pr * value_1[ii];
-  }
-
-  return xi2;
-}
-*/
-
-//void vec(std::vector<double>* vec, int kk) {
-//  std::vector<double> vec1[kk]; = *vec;
-//  Rcpp::Rcout << vec1[kk].data() << std::endl;
-//}
 
 // my function risk_balance
 static double risk_balance(double xx, struct current_next* pinfo) {
@@ -1039,7 +934,7 @@ static double construct(double cost0, struct ground* ground) {
   //  Rcpp::Rcout << "# work_test_norm_c # # construct # upper boundary: " << *cc_k << std::endl;
 
   *cc_k = 
-    bisection_inverse((double (*)(double, void*)) current_risk_balance,
+    bisection_inverse(current_risk_balance,
       0, &str_base_time, ss_k[wing_l[kk] - 1], ss_k[0],
       false, true, false, tol_boundary);
     //Rcpp::Rcout << "# work_test_norm_c # # construct # upper boundary: " << *cc_k << std::endl;
@@ -1125,7 +1020,7 @@ static double construct(double cost0, struct ground* ground) {
 
     // Lower bound of the stopping boundary //
     *cc_k = 
-      bisection_inverse((double (*)(double, void*)) current_risk_balance,
+      bisection_inverse(current_risk_balance,
         0, &str_base_time, ss_k[wing_l[kk] - 1], ss_k[0],
         false, true, false, tol_boundary);
       //Rcpp::Rcout << "# work_test_norm_c # # construct # lower bound for upper boundary: " << *cc_k << std::endl;
@@ -1173,7 +1068,7 @@ static double construct(double cost0, struct ground* ground) {
 
     // Stopping boundary //
     *cc_k = 
-      bisection_inverse((double (*)(double, void*)) risk_balance,
+      bisection_inverse(risk_balance,
         0, &str_current_next, *cc_k, up_wing_temp[kk] + up_wing_buffer[kk],
         false, true, false, tol_boundary);
       //Rcpp::Rcout << "# work_test_norm_c # # construct # upper boundary: " << *cc_k << std::endl;
@@ -1261,11 +1156,11 @@ static double construct(double cost0, struct ground* ground) {
   // Lower bound of the stopping boundary //
   //Rcpp::Rcout << ss_k[wing_l[kk] - 1] << "; " << ss_k[0] << std::endl;
   *cc_k = 
-    bisection_inverse((double (*)(double, void*)) current_risk_balance,
+    bisection_inverse(current_risk_balance,
       0, &str_base_time, ss_k[wing_l[kk] - 1], ss_k[0],
       false, true, false, tol_boundary);
   //*cc_k = 
-  //  bisection_inverse((double (*)(double, void*)) current_risk_balance,
+  //  bisection_inverse(current_risk_balance,
   //    0, &str_base_time, vss0[kk + 1].at(wing_l[kk + 1] - 1), vss0[kk + 1].at(0),
   //    false, true, false, tol_boundary);
     //Rcpp::Rcout << "# work_test_norm_c # # construct # lower bound for upper boundary: " << *cc_k << std::endl;
@@ -1315,13 +1210,13 @@ static double construct(double cost0, struct ground* ground) {
   *doubleVar = doubleInf;  // for t_k == 0;
   if ( t_k > 0 ) {
     *doubleVar = 
-      bisection_inverse((double (*)(double, void*)) risk_balance,
+      bisection_inverse(risk_balance,
         0, &str_current_next, *cc_k, up_wing_temp[kk] + up_wing_buffer[kk],
         false, true, false, tol_boundary);
       //Rcpp::Rcout << "# work_test_norm_c # # construct # upper boundary: " << *doubleVar << std::endl;
   }
   // *cc_k = 
-  //  bisection_inverse((double (*)(double, void*)) risk_balance,
+  //  bisection_inverse(risk_balance,
   //    0, &str_current_next, doubleVar[0], doubleVar[1],
   //    false, true, false, tol_boundary);
   *cc_k = -1;
@@ -1733,10 +1628,11 @@ const double tol_cost = 1e-8) {
     //div_unit[kk] = div_unit[kk] * 3 / (double) (2 * simpson_div);
     vdiv_unit.at(kk) = vdiv_unit.at(kk) * 3 / (double) (2 * simpson_div); //..
       //Rcpp::Rcout << "div_unit: " << div_unit[kk] << std::endl;
+    doubleVar[1] = (kk == 0) * (1 - analysis); // for avoidance of division by 0 [2018.9.18 new]
     //up_wing_units[kk] = ceil((up_wing_temp[kk] + up_wing_buffer[kk] * 2) / div_unit[kk]);
-    vup_wing_units.at(kk) = ceil((vup_wing_temp.at(kk) + vup_wing_buffer.at(kk) * 2) / vdiv_unit.at(kk)); //..
+    vup_wing_units.at(kk) = ceil((vup_wing_temp.at(kk) + vup_wing_buffer.at(kk) * 2) / (vdiv_unit.at(kk) + doubleVar[1])); //.. [2018.9.18 add doubleVar[1]]
     //lw_wing_units[kk] = ceil((-sqrt(U_k[kk]) * *xdev) / div_unit[kk]);
-    vlw_wing_units.at(kk) = ceil((-sqrt(vU_k.at(kk)) * *xdev) / vdiv_unit.at(kk)); //..
+    vlw_wing_units.at(kk) = ceil((-sqrt(vU_k.at(kk)) * *xdev) / (vdiv_unit.at(kk) + doubleVar[1])); //.. [2018.9.18 add doubleVar[1]]
     //wing_l[kk] = up_wing_units[kk] - lw_wing_units[kk] + 1;
     vwing_l.at(kk) = vup_wing_units.at(kk) - vlw_wing_units.at(kk) + 1; //..
       //Rcpp::Rcout << "up_wing_units: " << up_wing_units[kk] << "; lw_wing_units: " << lw_wing_units[kk] << "; wing_l: " << wing_l[kk] << std::endl;
@@ -1901,7 +1797,7 @@ const double tol_cost = 1e-8) {
 
   if ( cost0 == 0) {
     ////Rcpp::Rcout << "# work_test_norm_c # cost search start." << std::endl;
-    cost0 = bisection_inverse((double (*)(double, void*)) construct,
+    cost0 = bisection_inverse(construct,
             cond_alpha, &str_ground, 1e-6, cost_upper_lim,
             false, true, false, tol_cost);
   }
@@ -2468,10 +2364,11 @@ double sample_size_norm_c(
     //div_unit[kk] = div_unit[kk] * 3 / (double) (2 * simpson_div);
     vdiv_unit.at(kk) = vdiv_unit.at(kk) * 3 / (double) (2 * simpson_div); //..
       //Rcpp::Rcout << "div_unit: " << div_unit[kk] << std::endl;
+    doubleVar[1] = (kk == 0); // for avoidance of division by 0 [2018.9.18 new]
     //up_wing_units[kk] = ceil(cc[kk] / div_unit[kk]);
-    vup_wing_units.at(kk) = ceil(vcc.at(kk) / vdiv_unit.at(kk)); //..
+    if ( kk > 0 ) { vup_wing_units.at(kk) = ceil(vcc.at(kk) / (vdiv_unit.at(kk) + doubleVar[1])); } //.. because vcc.at(0) == Inf for kk == 0
     //lw_wing_units[kk] = ceil((-sqrt(U_k[kk]) * *xdev) / div_unit[kk]);
-    vlw_wing_units.at(kk) = ceil((-sqrt(vU_k.at(kk)) * *xdev) / vdiv_unit.at(kk)); //..
+    vlw_wing_units.at(kk) = ceil((-sqrt(vU_k.at(kk)) * *xdev) / (vdiv_unit.at(kk) + doubleVar[1])); //.. [2018.9.18 add doubleVar[1]]
       //up_wing_units[0] = 0;
       vup_wing_units.at(0) = 0; //..
       //lw_wing_units[0] = 0;
@@ -2627,7 +2524,7 @@ double sample_size_norm_c(
     if ( doubleVar[1] >= target_power ) {
       *doubleVar = time;
     } else {
-      *doubleVar = bisection_inverse((double (*)(double, void*)) pr_rej_H0_lower_bound,
+      *doubleVar = bisection_inverse(pr_rej_H0_lower_bound,
         target_power, &str_ground, time, time * 10,
         true, false, false, tol_sample_size);
     }
@@ -2654,7 +2551,7 @@ struct base_test {
   Rcpp::List* cc;
 } ;
 
-double pr_rej_H0(
+static double pr_rej_H0(
 std::vector<double>* pvU_k = 0,
 std::vector<double>* pvcc = 0,
 double stat = 0,
@@ -2669,10 +2566,10 @@ const int simpson_div = 6) {
   //int intVar[8] = {};
 
   double* U_k = (*pvU_k).data();
-std::vector<double> vU_k = (*pvU_k);
+  std::vector<double> vU_k = (*pvU_k);
   int work_KK = (*pvU_k).size() - 1;
   int work_KK_1 = work_KK + 1;
-std::vector<double> vcc = (*pvcc);
+  std::vector<double> vcc = (*pvcc);
   //double* cc = (*pvcc).data();
 
     //for ( int kk = 0; kk < work_KK_1; kk++ ) {
@@ -2882,7 +2779,7 @@ struct arg_pr_rej_H0* parg) {
   return cond_power;
 }
 
-double project_power(
+static double project_power(
 const double effect_size,
 struct base_test* ptest
 ) {
@@ -3093,7 +2990,7 @@ struct base_test* ptest
 //Rcpp::Rcout << "pr_rej_H0_sol1 sol_u = " << *doubleVar << "; vcc.at(" << fin_kk << ") = " << vcc.at(fin_kk) << std::endl;
 //Rcpp::Rcout << "pr_rej_H0_sol1 (" << *doubleVar / 2. << ") = "; Rcpp::Rcout << pr_rej_H0_sol1(*doubleVar / 2., &str_arg_pr_rej_H0) << std::endl;
 //Rcpp::Rcout << "pr_rej_H0_sol1 (" << *doubleVar << ") = "; Rcpp::Rcout << pr_rej_H0_sol1(*doubleVar, &str_arg_pr_rej_H0) << std::endl;
-        fin_cc = bisection_inverse((double (*)(double, void*)) pr_rej_H0_sol1,
+        fin_cc = bisection_inverse(pr_rej_H0_sol1,
           cond_power, &str_arg_pr_rej_H0, *doubleVar / 2., *doubleVar,
           false, true, false, init_par["tol_boundary"]); // smaller
       }
@@ -3137,7 +3034,7 @@ struct base_test* ptest
 }
 
 
-const double pr_rej_H0_sol2(
+static double pr_rej_H0_sol2(
 const double effect_size,
 struct arg_pr_rej_H0* parg
 ) {
@@ -3474,17 +3371,17 @@ Rcpp::List exact_est_norm_c(
       // Median Unbiased Est
 
      //Rcpp::Rcout << "# exact_est_norm_c # Computing exact median unbiased estimator" << std::endl;
-      mue = bisection_inverse((double (*)(double, void*)) project_power,
+      mue = bisection_inverse(project_power,
         0.5, &str_test, ciVar[4] - ciVar[5] / 2., ciVar[4] + ciVar[5] / 2.,
         false, true, false, tol_est); // smaller
       // Lower Limit
      //Rcpp::Rcout << "# exact_est_norm_c # Computing exact lower confidence limit" << std::endl;
-      vest.at(0) = bisection_inverse((double (*)(double, void*)) project_power,
+      vest.at(0) = bisection_inverse(project_power,
         *ciVar, &str_test, ciVar[4] - ciVar[5] * 3/2, mue,
         true, false, false, tol_est); // larger
       // Upper Limit
      //Rcpp::Rcout << "# exact_est_norm_c # Computing exact upper confidence limit" << std::endl;
-      vest.at(1) = bisection_inverse((double (*)(double, void*)) project_power,
+      vest.at(1) = bisection_inverse(project_power,
         1 - *ciVar, &str_test, mue, ciVar[4] + ciVar[5] * 3 / 2.,
         false, true, false, tol_est); // smaller
         //Rcpp::Rcout << "# exact_est_norm_c # P-value        = " << pval   << std::endl;
@@ -3593,19 +3490,19 @@ Rcpp::List exact_est_norm_c(
 
          // Median Unbiased Est
           //Rcpp::Rcout << "# exact_est_norm_c # Computing lower bound-based median unbiased estimator" << std::endl;
-         lbb_mue = bisection_inverse((double (*)(double, void*)) pr_rej_H0_sol2,
+         lbb_mue = bisection_inverse(pr_rej_H0_sol2,
            0.5, &str_arg_pr_rej_H0, ciVar[4] - ciVar[5] / 2., ciVar[4] + ciVar[5] / 2.,
            false, true, false, tol_est); // smaller
           //Rcpp::Rcout << "# exact_est_norm_c # Computing lower bound-based median unbiased estimator: " << lbb_mue << std::endl;
          // Lower Limit
           //Rcpp::Rcout << "# exact_est_norm_c # Computing lower bound-based lower confidence limit" << std::endl;
-         vlbb_est.at(0) = bisection_inverse((double (*)(double, void*)) pr_rej_H0_sol2,
+         vlbb_est.at(0) = bisection_inverse(pr_rej_H0_sol2,
            *ciVar, &str_arg_pr_rej_H0, ciVar[4] - ciVar[5] * 3/2, lbb_mue,
            true, false, false, tol_est); // larger
           //Rcpp::Rcout << "# exact_est_norm_c # Computing lower bound-based lower confidence limit: " << vlbb_est.at(0) << std::endl;
          // Upper Limit
           //Rcpp::Rcout << "# exact_est_norm_c # Computing lower bound-based upper confidence limit" << std::endl;
-         vlbb_est.at(1) = bisection_inverse((double (*)(double, void*)) pr_rej_H0_sol2,
+         vlbb_est.at(1) = bisection_inverse(pr_rej_H0_sol2,
            1 - *ciVar, &str_arg_pr_rej_H0, lbb_mue, ciVar[4] + ciVar[5] * 3 / 2.,
            false, true, false, tol_est); // smaller
           //Rcpp::Rcout << "# exact_est_norm_c # Computing lower bound-based upper confidence limit: " << vlbb_est.at(1) << std::endl;
