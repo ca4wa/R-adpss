@@ -25,5 +25,8 @@ There were 1 NOTEs in win_builder:
 
 Maintainer: 'Kosuke Kashiwabara <kashiwabara-tky@umin.ac.jp>'
 
+We further note that, because this packages requires R >= 3.5.0, errors in CRAN
+check by older versions of R are not the problem of this package.
+
 ## Downstream dependencies
 No dependencies.
