@@ -10,6 +10,14 @@ knitr::opts_chunk$set(
 )
 ```
 
+# adpss 0.1.1.9000
+
+## New features
+
+* Computational bug for approximate inference was corrected.
+* Non-monotonicity of p-value in exact inference was handled.
+
+
 # adpss 0.1.1
 
 ## New features

@@ -1797,8 +1797,30 @@ const double tol_cost = 1e-8) {
 
   if ( cost0 == 0) {
     ////Rcpp::Rcout << "# work_test_norm_c # cost search start." << std::endl;
+    // Appropriate cost_upper_lim
+    double cost_lower_lim = 1e-6;
+    cost_upper_lim = (prev_cost != 0) * prev_cost + (prev_cost == 0) * (*doubleVar);
+    *doubleVar = construct(cost_lower_lim, &str_ground);
+    doubleVar[1] = construct(cost_upper_lim, &str_ground);
+      //Rcpp::Rcout << "cost_upper_lim = " << cost_upper_lim << std::endl;
+      //Rcpp::Rcout << "doubleVar0 = " << *doubleVar << std::endl;
+      //Rcpp::Rcout << "doubleVar1 = " << doubleVar[1] << std::endl;
+      //Rcpp::Rcout << "equal = " << int (*doubleVar == doubleVar[1]) << std::endl;
+    if ( *doubleVar <= doubleVar[1] ) {
+      while ( *doubleVar <= doubleVar[1] ) {
+        //Rcpp::Rcout << "cost_lower_lim = " << cost_lower_lim << std::endl;
+        //Rcpp::Rcout << "cost_upper_lim = " << cost_upper_lim << std::endl;
+        cost_lower_lim = cost_upper_lim;
+        cost_upper_lim = cost_upper_lim * 4;
+        *doubleVar = doubleVar[1];
+        doubleVar[1] = construct(cost_upper_lim, &str_ground);
+      }
+    }
+    // Search
+      //Rcpp::Rcout << "cost_lower_lim = " << cost_lower_lim << std::endl;
+      //Rcpp::Rcout << "cost_upper_lim = " << cost_upper_lim << std::endl;
     cost0 = bisection_inverse(construct,
-            cond_alpha, &str_ground, 1e-6, cost_upper_lim,
+            cond_alpha, &str_ground, cost_lower_lim, cost_upper_lim,
             false, true, false, tol_cost);
   }
   double pr_type_1_err = construct(cost0, &str_ground);
@@ -2931,7 +2953,7 @@ struct base_test* ptest
         vcc_ = vcc;
         vcc_.resize(fin_kk + 1);
         *doubleVar = pr_rej_H0(&vU_k_, &vcc_, stat, effect_size, simpson_div);
-         //Rcpp::Rcout << "# project_power # Stage " << kk << "; temp. conditional power = " << *doubleVar << std::endl;
+          //Rcpp::Rcout << "# project_power # Stage " << kk << "; fin_kk " << fin_kk << "; temp. conditional power = " << *doubleVar << std::endl;
         if ( *doubleVar >= cond_power ) break;
       pre_cond_power = *doubleVar;  // preserve
       }
@@ -3331,6 +3353,7 @@ Rcpp::List exact_est_norm_c(
 
     //double* est = vest.data();
     mue = stat / time; // temporarily MLE
+    lbb_mue = mue; // temporarily MLE, initialize lbb_mue also here
     ciVar[2] = sqrt(1. / time); // naive SE for MLE
     ciVar[3] = -R::qnorm(*ciVar, 0, 1, 1, 0);
     ciVar[5] = ciVar[3] * ciVar[2]; // CI wing
@@ -3351,6 +3374,8 @@ Rcpp::List exact_est_norm_c(
     } else {
       ciVar[1] = project_power(mue, &str_test); // p-value at the MLE
       ciVar[4] = mue + -R::qnorm(ciVar[1], 0, 1, 1, 0) * ciVar[2];
+        //Rcpp::Rcout << "# exact_est_norm_c # MLE = " << mue << std::endl;
+        //Rcpp::Rcout << "# exact_est_norm_c # P-value at MLE = " << ciVar[1] << std::endl;
         //Rcpp::Rcout << "# exact_est_norm_c # Temp. Lower Conf Lim = " << ciVar[4] - ciVar[5] << std::endl;
         //Rcpp::Rcout << "# exact_est_norm_c # Temp. Med Unbias Est = " << ciVar[4] << std::endl;
         //Rcpp::Rcout << "# exact_est_norm_c # Temp. Upper Conf Lim = " << ciVar[4] + ciVar[5] << std::endl;
@@ -3364,25 +3389,40 @@ Rcpp::List exact_est_norm_c(
   //Rcpp::Rcout << "effect_size = " << ciVar[4] + ciVar[5] * 3 / 2. << std::endl;
   //Rcpp::Rcout << "pval = " << project_power(ciVar[4] + ciVar[5] * 3 / 2., &str_test) << std::endl;
   //Rcpp::stop("complete");
-   Rcpp::Rcout << "Computing exact estimates." << std::endl;
-     //Rcpp::Rcout << "# exact_est_norm_c # Exact inference [START]" << std::endl;
-     //Rcpp::Rcout << "# exact_est_norm_c # Computing exact P-value" << std::endl;
-      pval = project_power(0, &str_test); // p-value at the null
-      // Median Unbiased Est
+    Rcpp::Rcout << "# exact_est_norm_c # Computing exact estimates." << std::endl;
+      //Rcpp::Rcout << "# exact_est_norm_c # Exact inference [START]" << std::endl;
+      //Rcpp::Rcout << "# exact_est_norm_c # Computing exact P-value" << std::endl;
+    pval = project_power(0, &str_test); // p-value at the null
+    // Range check
+    double mue_lower_lim = ciVar[4] - ciVar[5] / 2.;
+    double mue_upper_lim = ciVar[4] + ciVar[5] / 2.;
+    *doubleVar = project_power(mue_lower_lim, &str_test);
+    doubleVar[1] = project_power(mue_upper_lim, &str_test);
+    if ( *doubleVar >= doubleVar[1] ) {
+      Rcpp::Rcout << "# exact_est_norm_c # Non-monotonicity was detected. The resulted estimates may not be exact." << std::endl;
+      while ( *doubleVar >= doubleVar[1] ) {
+        mue_upper_lim = mue_lower_lim;
+        mue_lower_lim = mue_lower_lim - ciVar[5] * 4;
+        doubleVar[1] = *doubleVar;
+        *doubleVar = project_power(mue_lower_lim, &str_test);
+      }
+    }
+      //Rcpp::Rcout << "mue_lower_lim = " << mue_lower_lim << "; mue_upper_lim = " << mue_upper_lim << std::endl;
 
+      // Median Unbiased Est
      //Rcpp::Rcout << "# exact_est_norm_c # Computing exact median unbiased estimator" << std::endl;
       mue = bisection_inverse(project_power,
-        0.5, &str_test, ciVar[4] - ciVar[5] / 2., ciVar[4] + ciVar[5] / 2.,
+        0.5, &str_test, mue_lower_lim, mue_upper_lim,
         false, true, false, tol_est); // smaller
       // Lower Limit
      //Rcpp::Rcout << "# exact_est_norm_c # Computing exact lower confidence limit" << std::endl;
       vest.at(0) = bisection_inverse(project_power,
-        *ciVar, &str_test, ciVar[4] - ciVar[5] * 3/2, mue,
+        *ciVar, &str_test, mue - ciVar[5] * 3/2, mue,
         true, false, false, tol_est); // larger
       // Upper Limit
      //Rcpp::Rcout << "# exact_est_norm_c # Computing exact upper confidence limit" << std::endl;
       vest.at(1) = bisection_inverse(project_power,
-        1 - *ciVar, &str_test, mue, ciVar[4] + ciVar[5] * 3 / 2.,
+        1 - *ciVar, &str_test, mue, mue + ciVar[5] * 3 / 2.,
         false, true, false, tol_est); // smaller
         //Rcpp::Rcout << "# exact_est_norm_c # P-value        = " << pval   << std::endl;
         //Rcpp::Rcout << "# exact_est_norm_c # Lower Conf Lim = " << est[0] << std::endl;
@@ -3391,7 +3431,7 @@ Rcpp::List exact_est_norm_c(
      //Rcpp::Rcout << "# exact_est_norm_c # Exact inference [END]" << std::endl;
 
       {
-   Rcpp::Rcout << "Computing approximate estimates." << std::endl;
+   Rcpp::Rcout << "# exact_est_norm_c # Computing approximate estimates." << std::endl;
      //Rcpp::Rcout << "# exact_est_norm_c # Approx inference [START]" << std::endl;
           //Rcpp::Rcout << "# exact_est_norm_c # stp_kk(max stage excluding t=0) = " << stp_kk << std::endl;
         time = vtimes.at(stp_kk - 1);
@@ -3482,6 +3522,14 @@ Rcpp::List exact_est_norm_c(
         str_arg_pr_rej_H0.vcc = &vcc;
         str_arg_pr_rej_H0.stat = 0;
         str_arg_pr_rej_H0.simpson_div = init_par["simpson_div"];
+
+        ciVar[1] = pr_rej_H0_sol2(lbb_mue, &str_arg_pr_rej_H0); // p-value at the MLE
+        ciVar[4] = lbb_mue + -R::qnorm(ciVar[1], 0, 1, 1, 0) * ciVar[2];
+          //Rcpp::Rcout << "# exact_est_norm_c # MLE = " << lbb_mue << std::endl;
+          //Rcpp::Rcout << "# exact_est_norm_c # P-value at MLE = " << ciVar[1] << std::endl;
+          //Rcpp::Rcout << "# exact_est_norm_c # Temp. Lower Conf Lim = " << ciVar[4] - ciVar[5] << std::endl;
+          //Rcpp::Rcout << "# exact_est_norm_c # Temp. Med Unbias Est = " << ciVar[4] << std::endl;
+          //Rcpp::Rcout << "# exact_est_norm_c # Temp. Upper Conf Lim = " << ciVar[4] + ciVar[5] << std::endl;
 
          // P-value
           //Rcpp::Rcout << "# exact_est_norm_c # Computing lower bound-based P-value" << std::endl;
