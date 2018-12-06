@@ -14,6 +14,16 @@ static double bisection_inverse(double (*fx)(double, c1 *), double y, c1 *info,
   double prec = 1e-8) {
     //Rcpp::Rcout << "# bisection_inverse # START" << std::endl;
 
+  // Safeguard //
+  {
+    double doubleVar[2];
+    *doubleVar = sol_l;
+    doubleVar[1] = sol_u;
+    sol_l = doubleVar[1 - int (*doubleVar <= doubleVar[1])];
+    sol_u = doubleVar[int (*doubleVar <= doubleVar[1])];
+    if ( sol_l > sol_u ) Rcpp::Rcout << "# bisection_inverse # sol_l and sol_u were exchanged." << std::endl;
+  }
+
   // Search target range //
   double itv = sol_u - sol_l;
 
@@ -137,6 +147,16 @@ static double bisection_inverse_print(double (*fx)(double, c1 *), double y, c1 *
   bool larger = false, bool smaller = false, bool exact = false,
   double prec = 1e-8) {
     Rcpp::Rcout << "# bisection_inverse # START" << std::endl;
+
+  // Safeguard //
+  {
+    double doubleVar[2];
+    *doubleVar = sol_l;
+    doubleVar[1] = sol_u;
+    sol_l = doubleVar[1 - int (*doubleVar <= doubleVar[1])];
+    sol_u = doubleVar[int (*doubleVar <= doubleVar[1])];
+    if ( sol_l > sol_u ) Rcpp::Rcout << "# bisection_inverse_print # sol_l and sol_u were exchanged." << std::endl;
+  }
 
   // Search target range //
   double itv = sol_u - sol_l;
