@@ -3418,7 +3418,7 @@ Rcpp::List exact_est_norm_c(
     double mue_upper_lim = ciVar[4] + ciVar[5] / 2.;
     *doubleVar = project_power(mue_lower_lim, &str_test);
     doubleVar[1] = project_power(mue_upper_lim, &str_test);
-    if ( *doubleVar >= doubleVar[1] ) {
+    if ( (*doubleVar >= doubleVar[1]) && (0.5 < doubleVar[1]) ) {
       Rcpp::Rcout << "# exact_est_norm_c # Non-monotonicity was detected. The resulted estimates may not be exact." << std::endl;
       while ( *doubleVar >= doubleVar[1] ) {
         mue_upper_lim = mue_lower_lim;
@@ -3426,7 +3426,15 @@ Rcpp::List exact_est_norm_c(
         doubleVar[1] = *doubleVar;
         *doubleVar = project_power(mue_lower_lim, &str_test);
       }
-    }
+    } else if ( (*doubleVar >= doubleVar[1]) && (*doubleVar < 0.5) ) {
+      Rcpp::Rcout << "# exact_est_norm_c # Non-monotonicity was detected. The resulted estimates may not be exact." << std::endl;
+      while ( *doubleVar >= doubleVar[1] ) {
+        mue_lower_lim = mue_upper_lim;
+        mue_upper_lim = mue_upper_lim + ciVar[5] * 4;
+        *doubleVar = doubleVar[1];
+        doubleVar[1] = project_power(mue_upper_lim, &str_test);
+      }
+    } // when '(*doubleVar >= doubleVar[1]) && (0.5 == doubleVar[1])', a solution lies between *dV and dV[1]
       //Rcpp::Rcout << "mue_lower_lim = " << mue_lower_lim << "; mue_upper_lim = " << mue_upper_lim << std::endl;
 
       // Median Unbiased Est
