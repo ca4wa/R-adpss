@@ -245,12 +245,13 @@ static double bisection_inverse_print(double (*fx)(double, c1 *), double y, c1 *
     } else if ( fx_mw < y ) {
       // fx_l < x < fx_m //
       if ( smaller && step <= prec ) {
-        //Rcpp::Rcout << "# bisection_inverse # RETURN" << std::endl;
+        Rcpp::Rcout << "# bisection_inverse # RETURN 1a" << std::endl;
         return sol;
       } else if ( larger && step  <= prec ) {
-        //Rcpp::Rcout << "# bisection_inverse # RETURN" << std::endl;
+        Rcpp::Rcout << "# bisection_inverse # RETURN 1b" << std::endl;
         return sol_u;
       } else {
+        Rcpp::Rcout << "# bisection_inverse # CONTINUE 1" << std::endl;
         fx_l = fx_mw;
         sol_l = sol;
         step = step / 2.;
@@ -259,12 +260,13 @@ static double bisection_inverse_print(double (*fx)(double, c1 *), double y, c1 *
     } else if ( fx_mw > y ) {
       // fx_m < x < fx_u //
       if ( larger && step <= prec ) {
-        //Rcpp::Rcout << "# bisection_inverse # RETURN" << std::endl;
+        Rcpp::Rcout << "# bisection_inverse # RETURN 2a" << std::endl;
         return sol;
       } else if ( smaller && step  <= prec ) {
-        //Rcpp::Rcout << "# bisection_inverse # RETURN" << std::endl;
+        Rcpp::Rcout << "# bisection_inverse # RETURN 2b" << std::endl;
         return sol_l;
       } else {
+        Rcpp::Rcout << "# bisection_inverse # CONTINUE 2" << std::endl;
         fx_u = fx_mw;
         sol_u = sol;
         step = step / 2.;
@@ -3413,13 +3415,18 @@ Rcpp::List exact_est_norm_c(
       //Rcpp::Rcout << "# exact_est_norm_c # Exact inference [START]" << std::endl;
       //Rcpp::Rcout << "# exact_est_norm_c # Computing exact P-value" << std::endl;
     pval = project_power(0, &str_test); // p-value at the null
+
+    // Median Unbiased Est
+      //Rcpp::Rcout << "# exact_est_norm_c # Computing exact median unbiased estimator" << std::endl;
     // Range check
     double mue_lower_lim = ciVar[4] - ciVar[5] / 2.;
     double mue_upper_lim = ciVar[4] + ciVar[5] / 2.;
     *doubleVar = project_power(mue_lower_lim, &str_test);
     doubleVar[1] = project_power(mue_upper_lim, &str_test);
+      //Rcpp::Rcout << "Lower lim = " << mue_lower_lim << "; power = " << *doubleVar << std::endl;
+      //Rcpp::Rcout << "Upper lim = " << mue_upper_lim << "; power = " << doubleVar[1] << std::endl;
     if ( (*doubleVar >= doubleVar[1]) && (0.5 < doubleVar[1]) ) {
-      Rcpp::Rcout << "# exact_est_norm_c # Non-monotonicity was detected. The resulted estimates may not be exact." << std::endl;
+      Rcpp::Rcout << "# exact_est_norm_c # Non-monotonicity was detected. The resulted exact median unbiased estimate may not be exact." << std::endl;
       while ( *doubleVar >= doubleVar[1] ) {
         mue_upper_lim = mue_lower_lim;
         mue_lower_lim = mue_lower_lim - ciVar[5] * 4;
@@ -3427,7 +3434,7 @@ Rcpp::List exact_est_norm_c(
         *doubleVar = project_power(mue_lower_lim, &str_test);
       }
     } else if ( (*doubleVar >= doubleVar[1]) && (*doubleVar < 0.5) ) {
-      Rcpp::Rcout << "# exact_est_norm_c # Non-monotonicity was detected. The resulted estimates may not be exact." << std::endl;
+      Rcpp::Rcout << "# exact_est_norm_c # Non-monotonicity was detected. The resulted exact median unbiased estimate may not be exact." << std::endl;
       while ( *doubleVar >= doubleVar[1] ) {
         mue_lower_lim = mue_upper_lim;
         mue_upper_lim = mue_upper_lim + ciVar[5] * 4;
@@ -3435,22 +3442,58 @@ Rcpp::List exact_est_norm_c(
         doubleVar[1] = project_power(mue_upper_lim, &str_test);
       }
     } // when '(*doubleVar >= doubleVar[1]) && (0.5 == doubleVar[1])', a solution lies between *dV and dV[1]
-      //Rcpp::Rcout << "mue_lower_lim = " << mue_lower_lim << "; mue_upper_lim = " << mue_upper_lim << std::endl;
-
-      // Median Unbiased Est
-     //Rcpp::Rcout << "# exact_est_norm_c # Computing exact median unbiased estimator" << std::endl;
+      //Rcpp::Rcout << "Lower lim = " << mue_lower_lim << "; power = " << *doubleVar << std::endl;
+      //Rcpp::Rcout << "Upper lim = " << mue_upper_lim << "; power = " << doubleVar[1] << std::endl;
       mue = bisection_inverse(project_power,
         0.5, &str_test, mue_lower_lim, mue_upper_lim,
         false, true, false, tol_est); // smaller
-      // Lower Limit
-     //Rcpp::Rcout << "# exact_est_norm_c # Computing exact lower confidence limit" << std::endl;
+
+    // Lower Limit
+      //Rcpp::Rcout << "# exact_est_norm_c # Computing exact lower confidence limit" << std::endl;
+    // Range check
+    mue_lower_lim = mue - ciVar[5] * 3/2;
+    mue_upper_lim = mue;
+    *doubleVar = project_power(mue_lower_lim, &str_test);
+    doubleVar[1] = project_power(mue_upper_lim, &str_test);
+      //Rcpp::Rcout << "Lower lim = " << mue_lower_lim << "; power = " << *doubleVar << std::endl;
+      //Rcpp::Rcout << "Upper lim = " << mue_upper_lim << "; power = " << doubleVar[1] << std::endl;
+    if ( *doubleVar >= doubleVar[1] ) {
+      Rcpp::Rcout << "# exact_est_norm_c # Non-monotonicity was detected. The resulted exact lower limit may not be exact." << std::endl;
+      while ( *doubleVar >= doubleVar[1] ) {
+        mue_upper_lim = mue_lower_lim;
+        mue_lower_lim = mue_lower_lim - ciVar[5] * 4;
+        doubleVar[1] = *doubleVar;
+        *doubleVar = project_power(mue_lower_lim, &str_test);
+      }
+    } // doubleVar[1] is always 0.5 by definition
+      //Rcpp::Rcout << "Lower lim = " << mue_lower_lim << "; power = " << *doubleVar << std::endl;
+      //Rcpp::Rcout << "Upper lim = " << mue_upper_lim << "; power = " << doubleVar[1] << std::endl;
       vest.at(0) = bisection_inverse(project_power,
-        *ciVar, &str_test, mue - ciVar[5] * 3/2, mue,
+        *ciVar, &str_test, mue_lower_lim, mue_upper_lim,
         true, false, false, tol_est); // larger
-      // Upper Limit
-     //Rcpp::Rcout << "# exact_est_norm_c # Computing exact upper confidence limit" << std::endl;
+
+    // Upper Limit
+      //Rcpp::Rcout << "# exact_est_norm_c # Computing exact upper confidence limit" << std::endl;
+    // Range check
+    mue_lower_lim = mue;
+    mue_upper_lim = mue + ciVar[5] * 3 / 2.;
+    *doubleVar = project_power(mue_lower_lim, &str_test);
+    doubleVar[1] = project_power(mue_upper_lim, &str_test);
+      //Rcpp::Rcout << "Lower lim = " << mue_lower_lim << "; power = " << *doubleVar << std::endl;
+      //Rcpp::Rcout << "Upper lim = " << mue_upper_lim << "; power = " << doubleVar[1] << std::endl;
+    if ( *doubleVar >= doubleVar[1] ) {
+      Rcpp::Rcout << "# exact_est_norm_c # Non-monotonicity was detected. The resulted exact upper limit may not be exact." << std::endl;
+      while ( *doubleVar >= doubleVar[1] ) {
+        mue_lower_lim = mue_upper_lim;
+        mue_upper_lim = mue_upper_lim + ciVar[5] * 4;
+        *doubleVar = doubleVar[1];
+        doubleVar[1] = project_power(mue_upper_lim, &str_test);
+      }
+    } // doubleVar[1] is always 0.5 by definition
+      //Rcpp::Rcout << "Lower lim = " << mue_lower_lim << "; power = " << *doubleVar << std::endl;
+      //Rcpp::Rcout << "Upper lim = " << mue_upper_lim << "; power = " << doubleVar[1] << std::endl;
       vest.at(1) = bisection_inverse(project_power,
-        1 - *ciVar, &str_test, mue, mue + ciVar[5] * 3 / 2.,
+        1 - *ciVar, &str_test, mue_lower_lim, mue_upper_lim,
         false, true, false, tol_est); // smaller
         //Rcpp::Rcout << "# exact_est_norm_c # P-value        = " << pval   << std::endl;
         //Rcpp::Rcout << "# exact_est_norm_c # Lower Conf Lim = " << est[0] << std::endl;
