@@ -3395,6 +3395,8 @@ Rcpp::List exact_est_norm_c(
       lbb_pval = pval;
       lbb_mue = mue;
       vlbb_est = vest;
+      lbb1_pval = pval;
+      lbb1_mue = mue;
       vlbb1_est = vest;
     } else {
       ciVar[1] = project_power(mue, &str_test); // p-value at the MLE
