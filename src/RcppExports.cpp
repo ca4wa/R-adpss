@@ -73,3 +73,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// exp_sample_size_norm_c
+double exp_sample_size_norm_c(Rcpp::List initial_test, const double effect_size, const double time, const double final_time, const bool input_check);
+RcppExport SEXP _adpss_exp_sample_size_norm_c(SEXP initial_testSEXP, SEXP effect_sizeSEXP, SEXP timeSEXP, SEXP final_timeSEXP, SEXP input_checkSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::List >::type initial_test(initial_testSEXP);
+    Rcpp::traits::input_parameter< const double >::type effect_size(effect_sizeSEXP);
+    Rcpp::traits::input_parameter< const double >::type time(timeSEXP);
+    Rcpp::traits::input_parameter< const double >::type final_time(final_timeSEXP);
+    Rcpp::traits::input_parameter< const bool >::type input_check(input_checkSEXP);
+    rcpp_result_gen = Rcpp::wrap(exp_sample_size_norm_c(initial_test, effect_size, time, final_time, input_check));
+    return rcpp_result_gen;
+END_RCPP
+}

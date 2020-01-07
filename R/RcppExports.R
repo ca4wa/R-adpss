@@ -17,3 +17,7 @@ exact_est_norm_c <- function(initial_test = 0L, times = 0L, stats = 0L, costs = 
     .Call(`_adpss_exact_est_norm_c`, initial_test, times, stats, costs, final_analysis, estimate, ci_coef, tol_est, input_check)
 }
 
+exp_sample_size_norm_c <- function(initial_test = 0L, effect_size = 0, time = 0, final_time = 0, input_check = TRUE) {
+    .Call(`_adpss_exp_sample_size_norm_c`, initial_test, effect_size, time, final_time, input_check)
+}
+

@@ -2,6 +2,7 @@
 
 export(adaptive_analysis_norm_global)
 export(adaptive_analysis_norm_local)
+export(exp_sample_size_norm_global)
 export(sample_size_norm_global)
 export(sample_size_norm_local)
 export(work_test_norm_global)
