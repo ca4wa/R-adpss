@@ -4,13 +4,29 @@
 \alias{work_test_norm_global}
 \title{Construct a working test and implement an interim or the final analysis for a globally efficient adaptive design.}
 \usage{
-work_test_norm_global(overall_sig_level = 0.025, work_beta = 0.05,
-  cond_alpha = overall_sig_level, cost_type_1_err = 0,
-  cost_type_2_err = 0, prev_cost = 0, min_effect_size = 1,
-  effect_size = 0, basic_schedule_num = 50, basic_schedule_power = 2,
-  basic_schedule = 0, prior_dist = 0, prev_time = 0, time = 0,
-  next_time = 0, stat = 0, input_check = TRUE, out_process = FALSE,
-  simpson_div = 6, tol_boundary = 1e-08, tol_cost = 1e-08)
+work_test_norm_global(
+  overall_sig_level = 0.025,
+  work_beta = 0.05,
+  cond_alpha = overall_sig_level,
+  cost_type_1_err = 0,
+  cost_type_2_err = 0,
+  prev_cost = 0,
+  min_effect_size = 1,
+  effect_size = 0,
+  basic_schedule_num = 50,
+  basic_schedule_power = 2,
+  basic_schedule = 0,
+  prior_dist = 0,
+  prev_time = 0,
+  time = 0,
+  next_time = 0,
+  stat = 0,
+  input_check = TRUE,
+  out_process = FALSE,
+  simpson_div = 6,
+  tol_boundary = 1e-08,
+  tol_cost = 1e-08
+)
 }
 \arguments{
 \item{overall_sig_level}{Overall significance level in (0, 1). Default is 0.025.}

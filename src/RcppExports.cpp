@@ -5,6 +5,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // work_test_norm_c
 Rcpp::List work_test_norm_c(const double overall_sig_level, const double work_beta, const double cond_alpha, const double cost_type_1_err, const double cost_type_2_err, const double prev_cost, const double min_effect_size, const double effect_size, const int basic_schedule_num, const int basic_schedule_power, Rcpp::NumericVector basic_schedule, Rcpp::NumericVector prior_dist, const double prev_time, const double time, const double next_time, const double stat, const bool input_check, const bool out_process, const int simpson_div, const double tol_boundary, const double tol_cost);
 RcppExport SEXP _adpss_work_test_norm_c(SEXP overall_sig_levelSEXP, SEXP work_betaSEXP, SEXP cond_alphaSEXP, SEXP cost_type_1_errSEXP, SEXP cost_type_2_errSEXP, SEXP prev_costSEXP, SEXP min_effect_sizeSEXP, SEXP effect_sizeSEXP, SEXP basic_schedule_numSEXP, SEXP basic_schedule_powerSEXP, SEXP basic_scheduleSEXP, SEXP prior_distSEXP, SEXP prev_timeSEXP, SEXP timeSEXP, SEXP next_timeSEXP, SEXP statSEXP, SEXP input_checkSEXP, SEXP out_processSEXP, SEXP simpson_divSEXP, SEXP tol_boundarySEXP, SEXP tol_costSEXP) {

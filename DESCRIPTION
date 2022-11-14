@@ -17,7 +17,7 @@ LazyData: true
 URL: https://github.com/ca4wa/R-adpss
 LinkingTo: Rcpp (>= 0.12.17)
 Imports: Rcpp (>= 0.12.17)
-RoxygenNote: 6.0.1
+RoxygenNote: 7.2.2
 Suggests: knitr,
     rmarkdown
 VignetteBuilder: knitr

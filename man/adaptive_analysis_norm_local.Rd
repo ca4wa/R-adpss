@@ -4,9 +4,16 @@
 \alias{adaptive_analysis_norm_local}
 \title{Analyze data according to a locally efficient adaptive design.}
 \usage{
-adaptive_analysis_norm_local(overall_sig_level = 0.025, min_effect_size = 1,
-  times = 0, stats = 0, final_analysis = TRUE, estimate = FALSE,
-  ci_coef = 0.95, input_check = TRUE)
+adaptive_analysis_norm_local(
+  overall_sig_level = 0.025,
+  min_effect_size = 1,
+  times = 0,
+  stats = 0,
+  final_analysis = TRUE,
+  estimate = FALSE,
+  ci_coef = 0.95,
+  input_check = TRUE
+)
 }
 \arguments{
 \item{overall_sig_level}{Overall significance level in (0, 1). Default is 0.025.}

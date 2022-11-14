@@ -4,9 +4,17 @@
 \alias{sample_size_norm_local}
 \title{Calculate sample size or power for a locally efficient adaptive design.}
 \usage{
-sample_size_norm_local(overall_sig_level = 0.025, min_effect_size = 1,
-  sample_size = TRUE, effect_size = 1, time = 0, target_power = 0.8,
-  final_time = 0, tol_sample_size = 1e-08, input_check = TRUE)
+sample_size_norm_local(
+  overall_sig_level = 0.025,
+  min_effect_size = 1,
+  sample_size = TRUE,
+  effect_size = 1,
+  time = 0,
+  target_power = 0.8,
+  final_time = 0,
+  tol_sample_size = 1e-08,
+  input_check = TRUE
+)
 }
 \arguments{
 \item{overall_sig_level}{Overall significance level in (0, 1). Default is 0.025.}
