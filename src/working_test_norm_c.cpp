@@ -52,7 +52,7 @@ static double bisection_inverse(double (*fx)(double, c1 *), double y, c1 *info,
     //Rcpp::Rcout << "# bisection_inverse # ..... Passed initial check" << std::endl;
 
   // Search //
-  int ii = 0;
+  // int ii = 0;
   while( 1 ){
     R_CheckUserInterrupt();
     //Rcpp::Rcout << "# bisection_inverse # ..... Search solution range [" << sol_l << ", " << sol_u << "]" << std::endl;
@@ -74,7 +74,7 @@ static double bisection_inverse(double (*fx)(double, c1 *), double y, c1 *info,
       fx_u = fx_l;
       fx_l = sgn * (*fx)(sol_l, info);
     }
-    ii += 1;
+    // ii += 1;
     //Rcpp::Rcout << "ii: " << ii << std::endl;
   }
   //Rcpp::Rcout << "# bisection_inverse # Solution lies between: [" << sol_l << ", " << sol_u << "]" << std::endl;
@@ -1466,12 +1466,12 @@ const double tol_cost = 1e-8) {
   double prev_time_ = analysis * prev_time + (1 - analysis) * time; // When (1 - analysis), work test will be updated.
   double time_ = analysis * time + (1 - analysis) * next_time;
   int time_kk = 0;
-  int prev_time_kk = 0;
+  // int prev_time_kk = 0;
   for ( int kk = 1; kk < work_KK_1; kk++ ) {
     //*doubleVar = (U0[kk - 1] + U0[kk]) / 2.; // + 0.99 * (U0[kk + 1] - U0[kk]);
     *doubleVar = (vU0.at(kk - 1) + vU0.at(kk)) / 2.; //..
     time_kk += (*doubleVar < time_);
-    prev_time_kk += (*doubleVar < prev_time_);
+    // prev_time_kk += (*doubleVar < prev_time_);
   }
     //Rcpp::Rcout << "time: " << time << "; time_kk: " << time_kk << std::endl;
     //Rcpp::Rcout << "prev time: " << prev_time << "; prev time_kk: " << prev_time_kk << std::endl;
@@ -1803,8 +1803,8 @@ const double tol_cost = 1e-8) {
   struct ground str_ground;
   str_ground.str_base = str_base;
   str_ground.str_result = str_result;
-
-// vectorizeここまで
+  // vectorize, until here
+  
   //-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-//
   // Design Construction                                                       //
   //-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-//
@@ -1946,7 +1946,7 @@ const double tol_cost = 1e-8) {
   return d_out;
     //Rcpp::Rcout << "# TEST # " << 12 << std::endl;
 
-// 残り：仮説ごとの棄却確率（ステージ、全体）、期待中止時間（（ベイズ、仮説ごと）×（ステージ、全体））、time statで条件付け
+// Left: rejection prob. by hypotheses (Stage, overall), expected stopping time((Bayes, by hypotheses) x (stage, overall)), conditional on time stat
 }
 
 
@@ -3040,7 +3040,7 @@ struct base_test* ptest
       }
       *doubleVar = pr_rej_H0_sol1(fin_cc, &str_arg_pr_rej_H0);
       //Rcpp::Rcout << "# project_power # Stage " << kk << "; temp. conditional power = " << *doubleVar << "; fin_cc = " << fin_cc << std::endl;
-    } // ここまでOK
+    } // OK, until here
 
       // Projected working test;
       //vU_k = d_par["U_k"];
@@ -3810,7 +3810,8 @@ Rcpp::List exact_est_norm_c(
   );
   Rcpp::NumericVector rcost0;
   rcost0 = vcost0;
-  if ( final_analysis && (vtimes.size() == max_kk) ) rcost0.at(vtimes.size() - 1) = NA_REAL; // '&& (vtimes.size() == max_kk)' was added at Aug 21, 2018.
+  int vtimes_size = vtimes.size();
+  if ( final_analysis && (vtimes_size == max_kk) ) rcost0.at(vtimes.size() - 1) = NA_REAL; // '&& (vtimes.size() == max_kk)' was added at Aug 21, 2018.
   d_char = Rcpp::List::create(
     Rcpp::Named("cost0") = rcost0,
     Rcpp::Named("boundary") = vboundary,
@@ -3923,7 +3924,7 @@ static double exp_sample_size_lower_bound(double final_analysis, struct ground* 
   //=== Declarations (pointers for the (k + 1)th stage) ===//
   double t_k_1;
   double d_t;
-  double sq_d_t;
+  // double sq_d_t;
   int* cc_odd_n_k_1;
   //int* cc_n_k_1;
   double* cc_k_1;
@@ -3971,7 +3972,7 @@ static double exp_sample_size_lower_bound(double final_analysis, struct ground* 
 
   // Expected Sample Size //
   d_t = final_analysis - t_k;
-  sq_d_t = sqrt(d_t);
+  // sq_d_t = sqrt(d_t);
   for ( int ii = 0; ii < gg_k_l; ii++ ) {
     pr_rej_H0_k[ii] = d_t;
       //Rcpp::Rcout << "ii = " << ii << ": gg = " << gg_k[ii] << ": cond_err = " << val_k[ii] << "; pr_rej_H0 = " << pr_rej_H0_k[ii] << std::endl;
@@ -4014,7 +4015,7 @@ static double exp_sample_size_lower_bound(double final_analysis, struct ground* 
 
     t_k_1 = U_k[kk + 1];
     d_t = t_k_1 - t_k;
-    sq_d_t = sqrt(d_t);
+    // sq_d_t = sqrt(d_t);
     for ( int ii = 0; ii < xdev_l; ii++ ) {
       *intVar = round(-(xdev[ii] * sqrt(d_t) + effect_size * d_t) / div_unit[kk + 1]);
       xdev_k[ii] = *intVar;
@@ -4083,7 +4084,7 @@ static double exp_sample_size_lower_bound(double final_analysis, struct ground* 
 
   t_k_1 = U_k[kk + 1];
   d_t = t_k_1 - t_k;
-  sq_d_t = sqrt(d_t);
+  // sq_d_t = sqrt(d_t);
   for ( int ii = 0; ii < xdev_l; ii++ ) {
     *intVar = round(-(xdev[ii] * sqrt(d_t) + effect_size * d_t) / div_unit[kk + 1]);
     xdev_k[ii] = *intVar;
