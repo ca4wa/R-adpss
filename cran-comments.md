@@ -1,22 +1,14 @@
 ## Test environment
 * Ubuntu 20.04.1 LTS, R-release(4.2.2), GCC, by devtools::check_rhub
 * Debian, R-devel, GCC ASAN/UBSAN, by devtools::check_rhub
-* Windows (devel, release and oldrelease), by devtools::check_win
+* Windows (devel, release and oldrelease), by devtools::check_win_...
 
 ## R CMD check results
-There were no ERRORs or WARNINGs.
+There were no ERRORs or WARNINGs in all environments.
 
-There were no NOTES in Debian.
+There were no NOTES in Windows and Debian.
 
-There was 1 NOTE in Windows:
-
-* checking CRAN incoming feasibility ... NOTE
-Maintainer: 'Kosuke Kashiwabara <kashiwabara-tky@umin.ac.jp>'
-
-There were 2 NOTEs in Ubuntu:
-
-* checking CRAN incoming feasibility ... NOTE
-Maintainer: ‘Kosuke Kashiwabara <kashiwabara-tky@umin.ac.jp>’
+There was 1 NOTE in Ubuntu:
 
 * checking installed package size ... NOTE
   installed size is  8.4Mb
