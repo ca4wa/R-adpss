@@ -1,4 +1,11 @@
 
+# adpss 0.1.2
+
+## Corrections
+
+  - Some minor modifications to resolve warnings in installation were applied.
+  - Running algorithm is unchanged.
+
 # adpss 0.1.1
 
 ## New features
